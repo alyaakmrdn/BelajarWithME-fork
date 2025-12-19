@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Dashboard</title>
+    <title>Add Child - Parent Dashboard</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -67,7 +67,6 @@
     <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
         <button class="btn btn-outline-secondary me-3" id="toggleSidebar">☰</button>
         <a class="navbar-brand fw-bold text-green" href="#">Parent Dashboard</a>
-
         <div class="ms-auto"></div>
 
         <!-- Profile Dropdown -->
@@ -107,73 +106,43 @@
                     <a href="#" class="nav-link">Change Password</a>
                 </div>
             </li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('transactions') }}">Transaction</a></li>
             <li class="nav-item"><a class="nav-link text-danger" href="/logout">Logout</a></li>
         </ul>
     </div>
 
     <!-- MAIN CONTENT -->
-<div class="main-content p-4" id="mainContent">
-    <div style="height: 80px;"></div>
+    <div class="main-content p-4" id="mainContent">
+        <div style="height: 80px;"></div>
 
-    <h2 class="text-green">Welcome!</h2>
+        <h2 class="text-green mb-4">Add Child</h2>
 
-    <div class="row">
-    <div class="col-md-4 mb-3">
-        <div class="card shadow-sm h-100">
-            <div class="card-body">
-            <h5>Parent Name</h5>
-            <p>Phone Number</p>
-            <p>Address</p>
-        </div>
+        @if(session('success'))
+            <div class="alert alert-success">{{ session('success') }}</div>
+        @endif
+
+        <form method="POST" action="{{ route('children.store') }}">
+    @csrf
+    <div class="mb-3">
+        <label>Child Name</label>
+        <input type="text" name="name" class="form-control" required>
     </div>
+    <div class="mb-3">
+        <label>Email (optional)</label>
+        <input type="email" name="email" class="form-control">
     </div>
+    <div class="mb-3">
+        <label>Password (optional, leave blank to auto-generate)</label>
+        <input type="text" name="password" class="form-control">
+    </div>
+    <div class="mb-3">
+        <label>Academic Level</label>
+        <input type="text" name="academic_level" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-green">Save Child</button>
+    <a href="{{ route('parent.dashboard') }}" class="btn btn-secondary ms-2">Cancel</a>
+</form>
 
-    <hr class="my-4">
-
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Paid Course</h5>
-                        <p class="card-text">Course Name</p>
-                        <p class="card-text">Lecturer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Report</h5>
-                        <p class="card-text">Student Name</p>
-                        <p class="card-text">Title</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Transaction</h5>
-                        <p class="card-text">Course Name</p>
-                        <p class="card-text">Date</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    @if(session('invoice'))
-    <a href="{{ asset('storage/invoices/' . session('invoice')) }}"
-       class="btn btn-success mt-2"
-       target="_blank">
-        Download Receipt
-    </a>
-@endif
-</div>
-
+    </div>
 
     <!-- Bootstrap JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>

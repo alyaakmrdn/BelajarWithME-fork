@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Parent Dashboard</title>
+    <title>Parent</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -66,7 +66,7 @@
     <!-- TOP NAVBAR -->
     <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
         <button class="btn btn-outline-secondary me-3" id="toggleSidebar">☰</button>
-        <a class="navbar-brand fw-bold text-green" href="#">Parent Dashboard</a>
+        <a class="navbar-brand fw-bold text-green" href="#">Children Course</a>
 
         <div class="ms-auto"></div>
 
@@ -116,62 +116,35 @@
 <div class="main-content p-4" id="mainContent">
     <div style="height: 80px;"></div>
 
-    <h2 class="text-green">Welcome!</h2>
+    <h2 class="text-green">My Children</h2>
+
+    @if(count($children) == 0)
+        <p>No children registered yet.</p>
+    @endif
+
+    @if(session('success'))
+    <div class="alert alert-success">{{ session('success') }}</div>
+    @endif
 
     <div class="row">
+    @foreach($children as $child)
     <div class="col-md-4 mb-3">
         <div class="card shadow-sm h-100">
             <div class="card-body">
-            <h5>Parent Name</h5>
-            <p>Phone Number</p>
-            <p>Address</p>
+            <h5>{{ $child->name }}</h5>
+            <p>Level: {{ $child->academic_level }}</p>
+            <a href="{{ route('courses.index', ['child_id' => $child->uid]) }}" class="btn btn-green">
+                View Courses
+            </a>
+    </div>
         </div>
     </div>
+@endforeach
     </div>
-
-    <hr class="my-4">
-
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Paid Course</h5>
-                        <p class="card-text">Course Name</p>
-                        <p class="card-text">Lecturer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Report</h5>
-                        <p class="card-text">Student Name</p>
-                        <p class="card-text">Title</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Transaction</h5>
-                        <p class="card-text">Course Name</p>
-                        <p class="card-text">Date</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-    @if(session('invoice'))
-    <a href="{{ asset('storage/invoices/' . session('invoice')) }}"
-       class="btn btn-success mt-2"
-       target="_blank">
-        Download Receipt
-    </a>
-@endif
+<!-- Back Button -->
+    <div class="mt-4">
+        <a href="/parent_dashboard" class="btn btn-secondary">← Back to Dashboard</a>
+    </div>
 </div>
 
 

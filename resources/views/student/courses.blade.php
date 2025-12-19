@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    <title>Student</title>
 
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -72,7 +72,7 @@
 
         <!-- System Title -->
         <a class="navbar-brand fw-bold text-navy" href="#">
-            Student Dashboard
+            Course Learning
         </a>
 
         <div class="ms-auto"></div>
@@ -142,9 +142,9 @@
     <!-- MAIN CONTENT -->
     <div class="main-content p-4" id="mainContent">
         <div style="height: 80px;"></div>
-    <!--    <h2>My Courses</h2>
+        <h2>My Courses</h2>
 
-@if(count($courses) === 0)
+@if(count($enrolledCourses) === 0)
 
     <div class="alert alert-info">
         No courses enrolled yet.
@@ -152,7 +152,7 @@
     
 @else
 <div class="row">
-    @foreach($courses as $course)
+    @foreach($enrolledCourses as $course)
         <div class="col-md-4 mb-3">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
@@ -168,60 +168,7 @@
         </div>
     @endforeach
 </div>
-@endif -->
-
-
-        <h2 class="text-navy">Student Info</h2>
-
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Student Name</h5>
-                        <p class="card-text">Class</p>
-                        <p class="card-text">Phone Number</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-
-        <hr class="my-4">
-
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Enrolled Course</h5>
-                        <p class="card-text">Course Name</p>
-                        <p class="card-text">Lecturer</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Asignment</h5>
-                        <p class="card-text">Course Name</p>
-                        <p class="card-text">Due Date</p>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Grade</h5>
-                        <p class="card-text">Course Name</p>
-                        <p class="card-text">Result</p>
-                    </div>
-                </div>
-            </div>
-
-        </div>
+@endif
 
 
     </div>
