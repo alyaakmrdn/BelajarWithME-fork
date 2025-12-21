@@ -1,234 +1,143 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
+@extends('layouts.admin') {{-- adjust path if needed --}}
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'Admin Dashboard')
 
-    <style>
-        body {
-            background-color: #f5f0ff;
-        }
+@section('content')
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background-color: #6a0dad;
-            position: fixed;
-            height: 100%;
-            color: #fff;
-            transition: 0.3s;
-            overflow-y: auto;
-        }
+<div class="container-fluid">
 
-        .sidebar.collapsed {
-            margin-left: -250px;
-        }
+    <!-- Page Title -->
+    <h2 class="fw-bold text-purple mb-4">System Overview</h2>
 
-        .sidebar a {
-            color: #fff;
-        }
+    <!-- STAT CARDS -->
+    <div class="row g-4 mb-4">
 
-        .sidebar .nav-link:hover {
-            background-color: #4b0082;
-        }
-
-        /* MAIN CONTENT */
-        .main-content {
-            margin-left: 260px;
-            transition: 0.3s;
-        }
-
-        .main-content.expanded {
-            margin-left: 20px;
-        }
-
-        .text-purple {
-            color: #6a0dad;
-        }
-
-        .btn-purple {
-            background-color: #6a0dad;
-            color: white;
-        }
-        .btn-purple:hover {
-            background-color: #4b0082;
-            color: white;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
-        <!-- Toggle Sidebar -->
-        <button class="btn btn-outline-secondary me-3" id="toggleSidebar">
-            ☰
-        </button>
-
-        <!-- System Title -->
-        <a class="navbar-brand fw-bold text-purple" href="#">
-            Admin Dashboard
-        </a>
-
-        <!-- Spacer -->
-        <div class="ms-auto"></div>
-
-        <!-- Search Bar -->
-        <form class="d-none d-md-flex me-3">
-            <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
-        </form>
-
-        <!-- Profile Dropdown -->
-        <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                <img src="https://via.placeholder.com/40" class="rounded-circle me-2">
-                <span>Admin</span>
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                <li><a class="dropdown-item" href="#">Change Password</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar p-3" id="sidebar">
-        <h4 class="text-center mb-4">Menu</h4>
-
-        <ul class="nav flex-column">
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Dashboard</a>
-            </li>
-
-            <!-- Courses Menu -->
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#coursesMenu">Courses ▾</a>
-                <div class="collapse ps-3" id="coursesMenu">
-                    <a href="#" class="nav-link">Mathematics</a>
-                    <a href="#" class="nav-link">Science</a>
-                    <a href="#" class="nav-link">English</a>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Subjects</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Lecturers</a>
-            </li>
-
-            <!-- User Profile -->
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">User Profile ▾</a>
-                <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
-                    <a href="#" class="nav-link">Change Password</a>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link text-danger" href="/logout">Logout</a>
-            </li>
-
-        </ul>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content p-4" id="mainContent">
-        <div style="height: 80px;"></div>
-        <h2 class="text-purple">Subjects</h2>
-
-        <!-- Cards Row -->
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Mathematics</h5>
-                        <p class="card-text">Lecturer: John Doe</p>
-                        <button class="btn btn-purple">Manage Content</button>
-                    </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Students</h6>
+                    <h2 class="fw-bold text-primary">320</h2>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Science</h5>
-                        <p class="card-text">Lecturer: Jane Smith</p>
-                        <button class="btn btn-purple">Manage Content</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">English</h5>
-                        <p class="card-text">Lecturer: Mark Lee</p>
-                        <button class="btn btn-purple">Manage Content</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <hr class="my-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Parents</h6>
+                    <h2 class="fw-bold text-success">210</h2>
+                </div>
+            </div>
+        </div>
 
-        <h2 class="text-purple">Add New Course Content</h2>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Lecturers</h6>
+                    <h2 class="fw-bold text-warning">25</h2>
+                </div>
+            </div>
+        </div>
 
-        <!-- Form -->
-        <div class="card shadow-sm p-4" style="max-width: 600px;">
-            <form>
-
-                <label class="fw-bold">Select Subject</label>
-                <select class="form-select mb-3">
-                    <option>Mathematics</option>
-                    <option>Science</option>
-                    <option>English</option>
-                </select>
-
-                <label class="fw-bold">Content Type</label>
-                <select class="form-select mb-3">
-                    <option>Note</option>
-                    <option>Video</option>
-                    <option>Article</option>
-                    <option>Quiz</option>
-                </select>
-
-                <label class="fw-bold">Title</label>
-                <input type="text" class="form-control mb-3" placeholder="Content title">
-
-                <label class="fw-bold">Description / URL</label>
-                <textarea class="form-control mb-3" rows="4" placeholder="Add description or link"></textarea>
-
-                <button class="btn btn-purple">Add Content</button>
-
-            </form>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Active Courses</h6>
+                    <h2 class="fw-bold text-danger">18</h2>
+                </div>
+            </div>
         </div>
 
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- SECOND ROW -->
+    <div class="row g-4">
 
-    <!-- Sidebar Toggle Script -->
-    <script>
-        document.getElementById("toggleSidebar").onclick = function () {
-            document.getElementById("sidebar").classList.toggle("collapsed");
-            document.getElementById("mainContent").classList.toggle("expanded");
-        };
-    </script>
+        <!-- TRANSACTIONS -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header btn-purple">
+                    <h5 class="mb-0">Recent Transactions</h5>
+                </div>
 
-</body>
-</html>
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Parent</th>
+                                <th>Student</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>10 Dec 2025</td>
+                                <td>Mr. Ahmad</td>
+                                <td>Aisyah</td>
+                                <td>RM 150</td>
+                                <td><span class="badge bg-success">Paid</span></td>
+                            </tr>
+                            <tr>
+                                <td>09 Dec 2025</td>
+                                <td>Mrs. Siti</td>
+                                <td>Adam</td>
+                                <td>RM 200</td>
+                                <td><span class="badge bg-warning">Pending</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <div class="text-end">
+                        <a href="{{ route('admin.transactions') }}" class="btn btn-outline-secondary btn-sm">
+                            View All Transactions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SYSTEM ALERTS -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header btn-purple">
+                    <h5 class="mb-0">System Alerts</h5>
+                </div>
+
+                <div class="card-body">
+                    <div class="mb-3 p-3 bg-light border-start border-danger border-4 rounded">
+                        <strong>⚠ Pending Payments</strong>
+                        <p class="mb-0 small">12 unpaid transactions.</p>
+                    </div>
+
+                    <div class="mb-3 p-3 bg-light border-start border-warning border-4 rounded">
+                        <strong>👨‍🏫 Lecturer Assignment</strong>
+                        <p class="mb-0 small">2 courses without lecturer.</p>
+                    </div>
+
+                    <div class="p-3 bg-light border-start border-success border-4 rounded">
+                        <strong>✅ System Healthy</strong>
+                        <p class="mb-0 small">No critical issues detected.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header btn-purple">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body d-grid gap-2">
+                    <a href="#" class="btn btn-outline-primary">Add Course</a>
+                    <a href="#" class="btn btn-outline-success">Add Lecturer</a>
+                    <a href="#" class="btn btn-outline-danger">View Reports</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+
+@endsection

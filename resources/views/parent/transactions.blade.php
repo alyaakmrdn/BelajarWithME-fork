@@ -1,203 +1,167 @@
-<!-- resources/views/parent/transactions.blade.php -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Transactions</title>
+@extends('layouts.parent')
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'Parent Transaction')
 
-    <style>
-        body { background-color: #f0fff0; }
+@push('styles')
+<style>
+    .x-small { font-size: 0.75rem; }
 
-        /* Sidebar */
-        .sidebar {
-            width: 250px;
-            background-color: #228B22;
-            position: fixed;
-            height: 100%;
-            color: #fff;
-            transition: 0.3s;
-            overflow-y: auto;
-        }
-        .sidebar.collapsed { margin-left: -250px; }
-        .sidebar a { color: #fff; }
-        .sidebar .nav-link:hover { background-color: #145214; }
+    .bg-success-subtle { background-color: #d1e7dd; }
+    .bg-warning-subtle { background-color: #fff3cd; }
+    .bg-danger-subtle  { background-color: #f8d7da; }
 
-        /* Main content */
-        .main-content { margin-left: 260px; transition: 0.3s; }
-        .main-content.expanded { margin-left: 20px; }
+    .btn-white {
+        background-color: #fff;
+        color: #333;
+    }
+    .btn-white:hover {
+        background-color: #f1f5f1;
+    }
 
-        .text-green { color: #228B22; }
-        .btn-green {
-            background-color: #228B22;
-            color: white;
-        }
+    /* Table */
+    .table tbody tr {
+        border-bottom: 1px solid #e5f2e5;
+    }
 
-        .btn-green:hover {
-            background-color: #145214;
-            color: white;
-        }
-        
-    </style>
-</head>
-<body>
-    <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
-        <button class="btn btn-outline-secondary me-3" id="toggleSidebar">☰</button>
-        <a class="navbar-brand fw-bold text-green" href="#">My Transactions</a>
-    </nav>
+    .table-hover tbody tr:hover {
+        background-color: #f3fbf3 !important;
+    }
 
-    <!-- SIDEBAR -->
-    <div class="sidebar p-3" id="sidebar">
-        <h4 class="text-center mb-4">Menu</h4>
-        <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="#">Dashboard</a></li>
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('parent.children') }}">My Children</a>
-                <!--<div class="collapse ps-3" id="childrenMenu">
-                    <a href="#" class="nav-link">Child 1</a>
-                    <a href="#" class="nav-link">Child 2</a>
-                    <a href="#" class="nav-link">Child 3</a>
-                </div>-->
-            </li>
-            <a class="nav-link" href="{{ route('parent.courses') }}">Courses</a>
-            <li class="nav-item"><a class="nav-link" href="#">Grades & Reports</a></li>
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
-                <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
-                    <a href="#" class="nav-link">Change Password</a>
+    /* Header */
+    .hdr-grn th {
+        background-color: #1e7a1e;
+        color: white;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+    }
+</style>
+@endpush
+
+@section('content')
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="text-green fw-bold mb-0">Transaction History</h2>
+            <p class="text-muted small">View and download your tuition payment records</p>
+        </div>
+        <a href="/parent_dashboard" class="btn btn-secondary">
+            ← Back
+        </a>
+    </div>
+<div class="px-4 py-2 bg-light border-bottom small text-muted">
+    Showing {{ $transactions->count() }} transactions
+</div>
+
+    <!-- Enhanced Filter Card -->
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body p-3">
+            <form method="GET" class="row g-2 align-items-end">
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted">Child</label>
+                    <select name="child_id" class="form-select border-light-subtle shadow-none">
+                        <option value="">All Children</option>
+                        @foreach($children as $id => $name)
+                            <option value="{{ $id }}" {{ request('child_id')==$id?'selected':'' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
                 </div>
-            </li>
-            <li class="nav-item"><a class="nav-link" href="{{ route('transactions') }}">Transaction</a></li>
-            <li class="nav-item"><a class="nav-link text-danger" href="/logout">Logout</a></li>
-        </ul>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted">Course</label>
+                    <select name="course_id" class="form-select border-light-subtle shadow-none">
+                        <option value="">All Courses</option>
+                        @foreach($dummyCourses as $id => $course)
+                            <option value="{{ $id }}" {{ request('course_id')==$id?'selected':'' }}>{{ $course['title'] }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label small fw-bold text-muted">Status</label>
+                    <select name="status" class="form-select border-light-subtle shadow-none">
+                        <option value="">All Status</option>
+                        <option value="paid" {{ request('status')=='paid'?'selected':'' }}>Paid</option>
+                        <option value="pending" {{ request('status')=='pending'?'selected':'' }}>Pending</option>
+                        <option value="failed" {{ request('status')=='failed'?'selected':'' }}>Failed</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-green w-100 fw-bold">Filter</button>
+                        <a href="{{ request()->url() }}" class="btn btn-light border w-100">Reset</a>
+                    </div>
+                </div>
+            </form>
+        </div>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content p-4" id="mainContent">
-        <div style="height: 80px;"></div>
-
-        <h2 class="text-green mb-4">Transaction History</h2>
-
-        <!-- Filters -->
-<form method="GET" class="mb-3 row g-2">
-    <!-- Child Dropdown -->
-    <div class="col-md-3">
-        <select name="child_id" class="form-select">
-            <option value="">All Children</option>
-            @foreach($children as $id => $name)
-                <option value="{{ $id }}" {{ request('child_id')==$id?'selected':'' }}>
-                    {{ $name }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-
-    <!-- Course Dropdown -->
-    <div class="col-md-3">
-        <select name="course_id" class="form-select">
-            <option value="">All Courses</option>
-            @foreach($dummyCourses as $id => $course)
-                <option value="{{ $id }}" {{ request('course_id')==$id?'selected':'' }}>
-                    {{ $course['title'] }}
-                </option>
-            @endforeach
-        </select>
-    </div>
-
-    <!-- Status -->
-    <div class="col-md-3">
-        <select name="status" class="form-select">
-            <option value="">All Status</option>
-            <option value="paid" {{ request('status')=='paid'?'selected':'' }}>Paid</option>
-            <option value="pending" {{ request('status')=='pending'?'selected':'' }}>Pending</option>
-            <option value="failed" {{ request('status')=='failed'?'selected':'' }}>Failed</option>
-        </select>
-    </div>
-
-    <div class="col-md-3">
-        <button class="btn btn-green">Filter</button>
-    </div>
-</form>
-
-        <!-- Transactions Table -->
+    <!-- Transactions Table -->
+    <div class="card border-0 shadow-sm overflow-hidden">
         <div class="table-responsive">
-            <table class="table table-bordered table-striped">
-                <thead class="table-success">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="hdr-grn">
                     <tr>
-                        <th>Date</th>
-                        <th>Transaction ID</th>
-                        <th>Child Name</th>
-                        <th>Course</th>
-                        <th>Amount Paid (RM)</th>
-                        <th>Payment Method</th>
-                        <th>Invoice</th>
-                        <th>Status</th>
+                        <th class="ps-4 py-3 border-0 text-uppercase fw-semibold">Date</th>
+                        <th class="py-3 border-0 text-uppercase small fw-bold ">Child & Course</th>
+                        <th class="py-3 border-0 text-uppercase small fw-bold ">Amount</th>
+                        <th class="py-3 border-0 text-uppercase small fw-bold text-center">Status</th>
+                        <th class="pe-4 py-3 border-0 text-uppercase small fw-bold text-end">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($transactions as $t)
                     <tr>
-    <td>{{ \Carbon\Carbon::parse($t['created_at'])->format('d M Y') }}</td>
-    <td>{{ $t['transaction_id'] ?? '-' }}</td>
-    <td>{{ $t['child_name'] ?? '-' }}</td>
-    <td>{{ $t['course_name'] ?? '-' }}</td>
-    <td>RM {{ number_format($t['total_paid'] ?? 0, 2) }}</td>
-    <td>{{ $t['payment_method'] ?? '-' }}</td>
-    <td>
-    @if(!empty($t['invoice']))
-        <a href="{{ asset('storage/invoices/' . $t['invoice']) }}"
-           class="btn btn-sm btn-success"
-           target="_blank">
-            Download
-        </a>
-    @else
-        -
-    @endif
-</td>
+                        <td class="ps-4">
+                            <div class="fw-bold">{{ \Carbon\Carbon::parse($t['created_at'])->format('d M Y') }}</div>
+                            <!--<div class="text-muted x-small">#{{ $t['transaction_id'] ?? '-' }}</div>-->
+                        </td>
+                        <td>
+                            <div class="fw-bold text-green">{{ $t['child_name'] ?? '-' }}</div>
+                            <div class="text-muted small">{{ $t['course_name'] ?? '-' }}</div>
+                        </td>
+                        <td>
+                            <div class="fw-bold text-dark">
+    RM {{ number_format($t['total_paid'] ?? 0, 2) }}
+</div>
+<div class="text-muted x-small">Tuition Fee</div>
 
-    <td>
-    @if($t['status'] === 'paid')
-        <span class="badge bg-success">Paid</span>
-    @elseif($t['status'] === 'pending')
-        <span class="badge bg-warning">Pending</span>
-    @else
-        <span class="badge bg-danger">Failed</span>
-    @endif
-</td>
-</tr>
-
+                            <!--<div class="text-muted x-small">{{ $t['payment_method'] ?? 'Online' }}</div>-->
+                        </td>
+                        <td class="text-center">
+                            @if($t['status'] === 'paid')
+                                <span class="badge rounded-pill bg-success-subtle text-success px-3 py-2 fw-semibold">Paid</span>
+                            @elseif($t['status'] === 'pending')
+                                <span class="badge rounded-pill bg-warning-subtle text-warning-emphasis px-3 py-2 fw-semibold">Pending</span>
+                            @else
+                                <span class="badge rounded-pill bg-danger-subtle text-danger px-3 py-2 fw-semibold">Failed</span>
+                            @endif
+                        </td>
+                        <td class="pe-4 text-end">
+                            @if(!empty($t['invoice']))
+                                <a href="{{ asset('storage/invoices/' . $t['invoice']) }}"
+                                   class="btn btn-sm btn-outline-success rounded-pill px-3"
+                                   target="_blank">
+                                    <i class="bi bi-download me-1"></i> Invoice
+                                </a>
+                            @else
+                                <span class="text-muted small italic">No Invoice</span>
+                            @endif
+                        </td>
+                    </tr>
                     @empty
                     <tr>
-                        <td colspan="8" class="text-center">No transactions found.</td>
+                        <td colspan="5" class="text-center py-5">
+                            <i class="bi bi-receipt text-muted display-4 d-block mb-3"></i>
+                            <p class="text-muted">No transactions found for the selected filters.</p>
+                        </td>
                     </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
-
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-3">
-            {{ $transactions->links() }}
-        </div>
-
-        <!-- Buttons -->
-    <div class="d-flex justify-content-between mt-4">
-        <a href="/parent_dashboard" class="btn btn-secondary">← Back to Dashboard</a>
-    </div>
     </div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        document.getElementById("toggleSidebar").onclick = function () {
-            document.getElementById("sidebar").classList.toggle("collapsed");
-            document.getElementById("mainContent").classList.toggle("expanded");
-        };
-    </script>
-</body>
-</html>
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+        {{ $transactions->links() }}
+    </div>
+
+@endsection

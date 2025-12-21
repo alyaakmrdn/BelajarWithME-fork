@@ -27,28 +27,23 @@ class ParentController extends Controller
     $parent_uid = Session::get('uid');
 
     // Fetch children from Firebase
-    $snapshot = $this->db
-        ->getReference('users')
-        ->orderByChild('parent_uid')  // Make sure parent_uid is consistent
-        ->equalTo($parent_uid)
-        ->getValue();
+    $users = $this->db->getReference('users')->getValue();
 
-    $children = [];
+$childrenCount = 0;
 
-    if ($snapshot) {
-        foreach ($snapshot as $uid => $child) {
-            if (($child['role'] ?? '') === 'student') {
-                $children[] = (object)[
-                    'uid' => $uid,
-                    'name' => $child['name'],
-                    'academic_level' => $child['academic_level'],
-                    'email' => $child['email'] ?? '',
-                ];
-            }
+if ($users) {
+    foreach ($users as $uid => $user) {
+        if (
+            isset($user['role'], $user['parent_uid']) &&
+            $user['role'] === 'student' &&
+            $user['parent_uid'] === $parent_uid
+        ) {
+            $childrenCount++;
         }
     }
+}
 
-    return view('login.parent_dashboard', compact('children'));
+    return view('login.parent_dashboard', compact('childrenCount'));
 }
 
 public function transactions(Request $request)
@@ -157,10 +152,14 @@ public function children()
         }
     }
 
+    
+
     return view('parent.children', compact('children'));
+
+    
 }
 
-public function coursesPage()
+public function coursesPage(Request $request)
 {
     $parent_uid = session('uid');
 
@@ -171,7 +170,7 @@ public function coursesPage()
         ->equalTo($parent_uid)
         ->getValue();
 
-    $children = [];
+    //$children = [];
 
     if ($snapshot) {
         foreach ($snapshot as $uid => $child) {
@@ -186,7 +185,41 @@ public function coursesPage()
         }
     }
 
-    return view('parent.courses', compact('children'));
+$dummyCourses = app(\App\Http\Controllers\CourseController::class)->getDummyCourses();
+    $allTransactions = $this->db->getReference('enrollments')->getValue() ?? [];
+$users = $this->db->getReference('users')->getValue() ?? [];
+
+$childTransactions = [];
+
+foreach ($allTransactions as $t) {
+    if (($t['parent_id'] ?? '') !== $parent_uid) continue;
+
+    $childTransactions[] = [
+        'created_at' => $t['created_at'],
+        'child_id'       => $t['child_id'],
+        'child_name' => $users[$t['child_id']]['name'] ?? '-',
+        'course_name' => $dummyCourses[$t['course_id']]['title'] ?? '-',
+        'total_paid' => $t['total_paid'] ?? 0,
+        'status'         => $t['status'] ?? 'paid',
+    ];
+}
+
+/* ---------- DROPDOWN FILTERS ---------- */
+    if ($request->child_id) {
+        $childTransactions = array_filter($childTransactions, fn($t) =>
+            $t['child_id'] === $request->child_id
+        );
+    }
+
+    /* ---------- DATA FOR DROPDOWNS ---------- */
+    $childrenDropdown = [];
+    foreach ($users as $uid => $u) {
+        if (($u['parent_uid'] ?? '') === $parent_uid && ($u['role'] ?? '') === 'student') {
+            $childrenDropdown[$uid] = $u['name'];
+        }
+    }
+
+    return view('parent.courses', compact('children', 'childTransactions', 'dummyCourses', 'childrenDropdown'));
 }
 
 

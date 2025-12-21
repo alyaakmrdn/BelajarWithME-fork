@@ -46,7 +46,8 @@ Route::post('/courses/{course_id}/enroll', [CourseController::class, 'enroll'])-
 // Student course routes
 Route::get('/student/courses', [StudentController::class, 'courses'])->name('student.courses');
 Route::get('/student/courses/{course_id}/materials', [CourseController::class, 'materials'])->name('student.materials');
-
+//dashboard student my course menu
+Route::get('/student/courses/{course_id}/materials', [CourseController::class, 'materials'])->name('courses.materials');
 /*
 |--------------------------------------------------------------------------
 | Parent Specific Pages
@@ -56,8 +57,6 @@ Route::get('/student/courses/{course_id}/materials', [CourseController::class, '
 Route::get('/parent/children', [ParentController::class, 'children'])->name('parent.children');
 // Show all children (Courses menu)
 Route::get('/parent/courses', [ParentController::class, 'coursesPage'])->name('parent.courses');
-// Add a child
-Route::get('/parent/children/create', [ParentController::class, 'createChild'])->name('children.create');
 
 /*
 |--------------------------------------------------------------------------
@@ -66,7 +65,8 @@ Route::get('/parent/children/create', [ParentController::class, 'createChild'])-
 */
 Route::get('/children/add', [ChildController::class, 'create'])->name('children.add');
 Route::post('/children/store', [ChildController::class, 'store'])->name('children.store');
-
+// Add Child 
+Route::get('/parent/children/add', [ChildController::class, 'create'])->name('children.create');
 /*
 |--------------------------------------------------------------------------
 | Enrollment & Payment (Demo Flow)
@@ -85,12 +85,16 @@ Route::post('/enroll/confirm', [EnrollmentController::class, 'confirm'])->name('
 */
 Route::get('/parent/transactions', [ParentController::class, 'transactions'])->name('transactions');
 
+// Admin - View all transactions
+Route::get('/admin/transactions', [AdminController::class, 'transactions'])
+    ->name('admin.transactions');
+
+
 /*
 |--------------------------------------------------------------------------
 | Not Sure / Duplicate / Commented Out
 |--------------------------------------------------------------------------
 */
 //Route::get('/student/courses/{courseId}/materials', [StudentController::class, 'materials'])->name('student.materials');
-//Route::get('/student/courses/{course_id}/materials', [CourseController::class, 'materials'])->name('courses.materials');
 //Route::get('/children/add', function () {return view('parent.add_child');})->name('children.add');
 //Route::post('/children/store', [ParentController::class, 'storeChild'])->name('children.store');

@@ -1,5 +1,5 @@
 <?php
-include 'dummy_courses.php';
+/*include 'dummy_courses.php';
 ?>
 
 <h2>Available Courses</h2>
@@ -17,3 +17,4 @@ include 'dummy_courses.php';
     </div>
 <?php endforeach; ?>
 </div>
+*/

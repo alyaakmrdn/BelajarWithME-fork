@@ -1,188 +1,86 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student</title>
+@extends('layouts.student')
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'Student My Courses')
 
-    <style>
-        body {
-            background-color: #e6eaf0; /* light navy background */
-        }
+@push('styles')
+<style>
+    /* Card hover effect */
+    .course-card {
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border-radius: 0.5rem;
+    }
+    .course-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    }
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background-color: #001f4d; /* navy blue */
-            position: fixed;
-            height: 100%;
-            color: #fff;
-            transition: 0.3s;
-            overflow-y: auto;
-        }
+    /* Card header typography */
+    .course-card h5 {
+        font-weight: 700;
+        color: #001f4d; /* navy */
+    }
 
-        .sidebar.collapsed {
-            margin-left: -250px;
-        }
+    .course-card p {
+        color: #4a4a4a;
+        margin-bottom: 1rem;
+    }
 
-        .sidebar a {
-            color: #fff;
-        }
+    /* Buttons */
+    .btn-navy {
+        background-color: #001f4d;
+        color: white;
+        transition: all 0.2s ease;
+    }
+    .btn-navy:hover {
+        background-color: #001033;
+        color: white;
+    }
 
-        .sidebar .nav-link:hover {
-            background-color: #001033; /* darker navy */
-        }
+    /* Empty state */
+    .empty-state {
+        border: 2px dashed #001f4d;
+        border-radius: 0.5rem;
+        padding: 3rem 1rem;
+        text-align: center;
+        background-color: #e6eaf0;
+        color: #001f4d;
+    }
 
-        /* MAIN CONTENT */
-        .main-content {
-            margin-left: 260px;
-            transition: 0.3s;
-        }
+    .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+</style>
+@endpush
 
-        .main-content.expanded {
-            margin-left: 20px;
-        }
+@section('content')
 
-        .text-navy {
-            color: #001f4d;
-        }
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="text-navy fw-bold">My Courses</h2>
+    </div>
 
-        .btn-navy {
-            background-color: #001f4d;
-            color: white;
-        }
-        .btn-navy:hover {
-            background-color: #001033;
-            color: white;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
-        <!-- Toggle Sidebar -->
-        <button class="btn btn-outline-secondary me-3" id="toggleSidebar">
-            ☰
-        </button>
-
-        <!-- System Title -->
-        <a class="navbar-brand fw-bold text-navy" href="#">
-            Course Learning
-        </a>
-
-        <div class="ms-auto"></div>
-
-        <!-- Search Bar -->
-        <form class="d-none d-md-flex me-3">
-            <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
-        </form>
-
-        <!-- Profile Dropdown -->
-        <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                <img src="https://via.placeholder.com/40" class="rounded-circle me-2">
-                <span>Student</span>
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                <li><a class="dropdown-item" href="#">Change Password</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a href="/logout" class="dropdown-item text-danger">Logout</a></li>
-            </ul>
+    @if(count($enrolledCourses) === 0)
+        <div class="empty-state my-4">
+            <i class="bi bi-book"></i>
+            <h4 class="mt-2">No courses enrolled yet</h4>
+            <p>Enroll in a course to start learning and access materials.</p>
         </div>
-    </nav>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar p-3" id="sidebar">
-        <h4 class="text-center mb-4">Menu</h4>
-
-        <ul class="nav flex-column">
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Dashboard</a>
-            </li>
-
-            <!-- Courses Menu -->
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('student.courses') }}">My Courses</a>
-                <div class="collapse ps-3" id="coursesMenu">
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Assignments</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Grades</a>
-            </li>
-
-            <!-- Profile -->
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
-                <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
-                    <a href="#" class="nav-link">Change Password</a>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link text-danger" href="/logout">Logout</a>
-            </li>
-
-        </ul>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content p-4" id="mainContent">
-        <div style="height: 80px;"></div>
-        <h2>My Courses</h2>
-
-@if(count($enrolledCourses) === 0)
-
-    <div class="alert alert-info">
-        No courses enrolled yet.
-    </div>
-    
-@else
-<div class="row">
-    @foreach($enrolledCourses as $course)
-        <div class="col-md-4 mb-3">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h5 class="card-title">{{ $course['title'] ?? 'Course' }}</h5>
-                    <p class="card-text">Class: {{ $course['class'] ?? '-' }}</p>
-
-                    <a href="{{ route('courses.materials', $course['id']) }}"
-                       class="btn btn-navy">
-                        View Materials
-                    </a>
+    @else
+        <div class="row g-4">
+            @foreach($enrolledCourses as $course)
+            <div class="col-md-6 col-xl-4">
+                <div class="card shadow-sm h-100 course-card">
+                    <div class="card-body d-flex flex-column">
+                        <h5>{{ $course['title'] ?? 'Course' }}</h5>
+                        <p>Class: {{ $course['class'] ?? '-' }}</p>
+                        <a href="{{ route('courses.materials', $course['id']) }}" class="btn btn-navy mt-auto">
+                            View Materials
+                        </a>
+                    </div>
                 </div>
             </div>
+            @endforeach
         </div>
-    @endforeach
-</div>
-@endif
+    @endif
 
-
-    </div>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Sidebar Toggle Script -->
-    <script>
-        document.getElementById("toggleSidebar").onclick = function () {
-            document.getElementById("sidebar").classList.toggle("collapsed");
-            document.getElementById("mainContent").classList.toggle("expanded");
-        };
-    </script>
-
-</body>
-</html>
+@endsection
