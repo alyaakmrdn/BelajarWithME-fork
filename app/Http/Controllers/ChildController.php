@@ -63,8 +63,8 @@ public function store(Request $request)
             'email' => $email,
         ]);
 
-        return redirect()->route('parent.dashboard')
-                         ->with('success', "Child added! Name: $name, Level: $academic_level");
+        return redirect()->route('children.add')
+                         ->with('success', 'Child added successfully!');
 
     } catch (\Throwable $e) {
         return back()->with('error', "Failed to add child: " . $e->getMessage());

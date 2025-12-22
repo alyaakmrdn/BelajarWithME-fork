@@ -119,10 +119,6 @@
     </div>
 @endif
 
-@if(session('success'))
-            <div class="alert alert-success">{{ session('success') }}</div>
-        @endif
-
 
                     <div class="mb-3 p-3 bg-light border-start border-success border-4 rounded">
                         <strong>📢 Exam Week</strong>
