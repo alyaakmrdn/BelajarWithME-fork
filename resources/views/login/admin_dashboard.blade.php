@@ -127,6 +127,10 @@
                 <a class="nav-link" href="#">Lecturers</a>
             </li>
 
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('admin.manage.reports') }}">Manage Reports</a>
+            </li>
+
             <!-- User Profile -->
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">User Profile ▾</a>

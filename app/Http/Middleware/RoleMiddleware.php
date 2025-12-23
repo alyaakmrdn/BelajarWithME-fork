@@ -13,11 +13,16 @@ class RoleMiddleware
      * Handle an incoming request.
      * $role can be 'admin', 'student', 'lecturer', 'parent'
      */
-    public function handle(Request $request, Closure $next, $role)
+    public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (!Session::has('uid') || Session::get('role') !== $role) {
-            // Redirect to login or show forbidden
-            return redirect('/login')->with('error', 'Access denied.');
+        if (!Session::has('role')) {
+            return redirect('/login')->with('error', 'Unauthorized access.');
+        }
+
+        $userRole = Session::get('role');
+
+        if (!in_array($userRole, $roles)) {
+            abort(403, 'Access denied.');
         }
 
         return $next($request);

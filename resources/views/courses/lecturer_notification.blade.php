@@ -146,76 +146,76 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-content p-4" id="mainContent">
-        <div style="height: 80px;"></div>
-        <h2 class="text-cherry">Subjects</h2>
-
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Mathematics</h5>
-                        <p class="card-text">Class: Form 4</p>
-                        <button class="btn btn-cherry">Manage Content</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Science</h5>
-                        <p class="card-text">Class: Form 5</p>
-                        <button class="btn btn-cherry">Manage Content</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">English</h5>
-                        <p class="card-text">Class: Form 3</p>
-                        <button class="btn btn-cherry">Manage Content</button>
-                    </div>
-                </div>
-            </div>
-
+        {{-- Page Header --}}
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+          <div>
+            <h3 class="mb-1">Notifications</h3>
+            <p class="text-muted mb-0">
+              Messages and updates from administrators
+            </p>
+          </div>
         </div>
 
-        <hr class="my-4">
+        {{-- Notification Table --}}
+        <div class="card shadow-sm">
+          <div class="card-body">
 
-        <h2 class="text-cherry">Upload New Teaching Material</h2>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Title</th>
+                    <th>Message</th>
+                    <th>Status</th>
+                    <th>Received At</th>
+                  </tr>
+                </thead>
 
-        <div class="card shadow-sm p-4" style="max-width: 600px;">
-            <form>
+                <tbody>
+                @forelse ($notifications as $index => $notification)
+                  <tr class="{{ !$notification['read'] ? 'table-warning' : '' }}">
+                    <td>{{ $index + 1 }}</td>
 
-                <label class="fw-bold">Select Subject</label>
-                <select class="form-select mb-3">
-                    <option>Mathematics</option>
-                    <option>Science</option>
-                    <option>English</option>
-                </select>
+                    {{-- Title --}}
+                    <td>
+                      <strong>{{ $notification['title'] }}</strong>
+                    </td>
 
-                <label class="fw-bold">Material Type</label>
-                <select class="form-select mb-3">
-                    <option>Note</option>
-                    <option>Video</option>
-                    <option>Article</option>
-                    <option>Quiz</option>
-                </select>
+                    {{-- Message --}}
+                    <td style="max-width: 400px;">
+                      <div class="text-truncate">
+                        {{ $notification['message'] }}
+                      </div>
+                    </td>
 
-                <label class="fw-bold">Title</label>
-                <input type="text" class="form-control mb-3" placeholder="Material title">
+                    {{-- Status --}}
+                    <td>
+                      @if($notification['read'])
+                        <span class="badge bg-secondary">Read</span>
+                      @else
+                        <span class="badge bg-success">New</span>
+                      @endif
+                    </td>
 
-                <label class="fw-bold">Description / URL</label>
-                <textarea class="form-control mb-3" rows="4" placeholder="Add description or link"></textarea>
+                    {{-- Date --}}
+                    <td>
+                      {{ $notification['created_at'] }}
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="5" class="text-center text-muted py-4">
+                      No notifications received.
+                    </td>
+                  </tr>
+                @endforelse
+                </tbody>
+              </table>
+            </div>
 
-                <button class="btn btn-cherry">Upload Material</button>
-
-            </form>
+          </div>
         </div>
-
     </div>
 
     <!-- JS -->

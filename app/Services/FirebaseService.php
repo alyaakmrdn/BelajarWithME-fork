@@ -13,8 +13,8 @@ class FirebaseService
 
     public function __construct()
     {
-        $serviceAccount = env('FIREBASE_CREDENTIAL_JSON');
-        $databaseUrl = env('FIREBASE_DATABASE_URL');
+        $serviceAccount = config('services.firebase.credentials');
+        $databaseUrl = config('services.firebase.database_url');
 
         $factory = (new Factory)
             ->withServiceAccount($serviceAccount)

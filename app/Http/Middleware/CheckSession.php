@@ -8,10 +8,14 @@ use Illuminate\Support\Facades\Session;
 
 class CheckSession
 {
-    public function handle(Request $request, Closure $next)
+     public function handle($request, Closure $next)
     {
-        if (!Session::has('uid')) {
-            return redirect('/login')->with('error', 'Please login first.');
+        if (
+            !Session::has('uid') ||
+            !Session::has('role') && !$request->routeIs('login')
+        ) {
+            Session::flush();
+            return redirect('/login')->with('error', 'Session expired');
         }
 
         return $next($request);

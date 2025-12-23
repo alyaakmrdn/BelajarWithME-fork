@@ -2,18 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+    <title>Course Overview</title>
 
-    <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
     <style>
         body {
-            background-color: #e6eaf0; /* light navy background */
+            background-color: #e6eaf0;
         }
 
-        /* SIDEBAR */
         .sidebar {
             width: 250px;
             background-color: #001f4d; /* navy blue */
@@ -54,9 +51,14 @@
             background-color: #001f4d;
             color: white;
         }
+
         .btn-navy:hover {
             background-color: #001033;
             color: white;
+        }
+
+        .card-subject {
+            border-left: 6px solid #001f4d;
         }
 
         .course-inactive {
@@ -73,7 +75,7 @@
 
 <body>
 
-    <!-- TOP NAVBAR -->
+<!-- TOP NAVBAR -->
     <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
         <!-- Toggle Sidebar -->
         <button class="btn btn-outline-secondary me-3" id="toggleSidebar">
@@ -157,84 +159,152 @@
         </ul>
     </div>
 
-    <!-- MAIN CONTENT -->
     <div class="main-content p-4" id="mainContent">
-        <h2 class="text-navy">My Courses</h2>
 
-        <div class="row g-3">
-            @foreach($courses as $course)
+        <h2 class="text-navy mb-4">Course Overview</h2>
+        <div class="row g-4">
+            @foreach($courses as $courseId => $course)
                 @php
                     $isInactive = ($course['status'] ?? 'active') === 'inactive';
                 @endphp
-                <div class="col-md-4">
-                    <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $course['name'] }}
-                                @if($isInactive)
-                                    <span class="badge bg-secondary">Inactive</span>
-                                @endif
-                            </h5>
-                            
+            <div class="col-md-4">
+                <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
+                    <div class="card-body">
+                        <h5 class="card-title d-flex justify-content-between align-items-center">
+                        {{ $course['name'] }}
 
-                            <p class="card-text">
-                                Lecturer: {{ $course['lecturer_email'] }} <br>
-                                Status: {{ ucfirst($course['status']) }}
-                            </p>
+                        @if($isInactive)
+                            <span class="badge bg-secondary">Inactive</span>
+                        @endif
+                        </h5>
 
-                            @if($isInactive)
-                                <div class="alert alert-warning small mt-2">
-                                    This course has been deactivated by admin.
-                                </div>
-                            @endif
 
+                        <p class="card-text">
+                            <strong>Course Code:</strong> {{ $courseId }} <br>
+                            <strong>Lecturer:</strong> {{ $course['lecturer_email'] }} <br>
+                            <strong>Status:</strong> {{ ucfirst($course['status']) }}
+                        </p>
+
+                        @if($isInactive)
+                            <div class="alert alert-warning small mt-2">
+                                This course has been deactivated by admin.
+                            </div>
+                        @endif
+
+                        <div class="d-flex justify-content-between">
                             <a
                                 href="#"
                                 class="btn btn-primary btn-sm {{ $isInactive ? 'disabled' : '' }}">
                                 View
                             </a>
+
+                            <button
+                                class="btn btn-outline-danger btn-sm" type="button"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#reportModal-{{ $courseId }}   
+                                    {{ $isInactive ? 'disabled' : '' }}">
+                                Report
+                            </button>
                         </div>
+
                     </div>
                 </div>
+            </div>
             @endforeach
         </div>
-
-        <hr class="my-4">
-
-        <h2 class="text-navy">Submit Assignment</h2>
-
-        <div class="card shadow-sm p-4" style="max-width: 600px;">
-            <form>
-
-                <label class="fw-bold">Select Course</label>
-                <select class="form-select mb-3">
-                    <option>Mathematics</option>
-                    <option>Science</option>
-                    <option>English</option>
-                </select>
-
-                <label class="fw-bold">Assignment Title</label>
-                <input type="text" class="form-control mb-3" placeholder="Assignment title">
-
-                <label class="fw-bold">Upload File / Link</label>
-                <input type="file" class="form-control mb-3">
-
-                <button class="btn btn-navy">Submit</button>
-
-            </form>
-        </div>
-
     </div>
 
-    <!-- Bootstrap JS -->
+    <!-- Modal -->
+     @foreach($courses as $courseId => $course)
+    <div class="modal fade" id="reportModal-{{ $courseId }}" tabindex="-1">
+        <div class="modal-dialog">
+            <form method="POST" action="{{ route('student.report.submit') }}">
+                @csrf
+
+                <input type="hidden" name="course_id" value="{{ $courseId }}">
+
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Report {{ $course['name'] }}</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <div class="modal-body">
+                        <label>Reason</label>
+                        <select name="reason" class="form-select" required>
+                            <option value="inappropriate_content">Inappropriate Content</option>
+                            <option value="incorrect_information">Incorrect Information</option>
+                        </select>
+
+                        <label class="mt-2">Description</label>
+                        <textarea name="description" class="form-control" required></textarea>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button class="btn btn-danger">Submit Report</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    @endforeach
+
+    @if (session('success'))
+    <div class="modal fade" id="successModal" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title">Success</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+            {{ session('success') }}
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-success" data-bs-dismiss="modal">
+            OK
+            </button>
+        </div>
+        </div>
+    </div>
+    </div>
+    @endif
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-    <!-- Sidebar Toggle Script -->
     <script>
         document.getElementById("toggleSidebar").onclick = function () {
             document.getElementById("sidebar").classList.toggle("collapsed");
             document.getElementById("mainContent").classList.toggle("expanded");
         };
+
+        const reportModal = document.getElementById('reportModal');
+
+        reportModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const course = button.getAttribute('data-course');
+            document.getElementById('courseCode').value = course;
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            @if(session('success'))
+                var successModal = new bootstrap.Modal(
+                    document.getElementById('successModal')
+                );
+                successModal.show();
+            @endif
+        });
     </script>
 
+    @if (session('success'))
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var successModal = new bootstrap.Modal(
+        document.getElementById('successModal')
+        );
+        successModal.show();
+    });
+    </script>
+    @endif
 </body>
 </html>

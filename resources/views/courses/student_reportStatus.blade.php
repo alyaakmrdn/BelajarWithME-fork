@@ -58,16 +58,6 @@
             background-color: #001033;
             color: white;
         }
-
-        .course-inactive {
-            opacity: 0.6;
-            filter: grayscale(100%);
-            pointer-events: none;
-        }
-
-        .course-inactive .badge {
-            pointer-events: auto;
-        }
     </style>
 </head>
 
@@ -159,70 +149,100 @@
 
     <!-- MAIN CONTENT -->
     <div class="main-content p-4" id="mainContent">
-        <h2 class="text-navy">My Courses</h2>
+        <h3 class="mt-5 mb-4">Report Status</h3>
+        <p class="text-muted">Track the status of reports you have submitted</p>
+        
+        <div class="card shadow-sm">
+          <div class="card-body">
 
-        <div class="row g-3">
-            @foreach($courses as $course)
-                @php
-                    $isInactive = ($course['status'] ?? 'active') === 'inactive';
-                @endphp
-                <div class="col-md-4">
-                    <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $course['name'] }}
-                                @if($isInactive)
-                                    <span class="badge bg-secondary">Inactive</span>
-                                @endif
-                            </h5>
-                            
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Course</th>
+                    <th>Reason</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Admin Action</th>
+                    <th>Submitted At</th>
+                    <th>Last Update</th>
+                  </tr>
+                </thead>
 
-                            <p class="card-text">
-                                Lecturer: {{ $course['lecturer_email'] }} <br>
-                                Status: {{ ucfirst($course['status']) }}
-                            </p>
+                <tbody>
+                @forelse ($reports as $index => $report)
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
 
-                            @if($isInactive)
-                                <div class="alert alert-warning small mt-2">
-                                    This course has been deactivated by admin.
-                                </div>
-                            @endif
+                    {{-- Course --}}
+                    <td>
+                      <strong>{{ $report['course_name'] }}</strong>
+                      <div class="text-muted small">
+                        {{ $report['course_id'] }}
+                      </div>
+                    </td>
 
-                            <a
-                                href="#"
-                                class="btn btn-primary btn-sm {{ $isInactive ? 'disabled' : '' }}">
-                                View
-                            </a>
+                    {{-- Reason --}}
+                    <td>
+                      <span class="badge bg-info text-dark">
+                        {{ ucfirst(str_replace('_', ' ', $report['reason'])) }}
+                      </span>
+                    </td>
+
+                    {{-- Description --}}
+                    <td style="max-width: 300px;">
+                      <div class="text-truncate">
+                        {{ $report['description'] }}
+                      </div>
+                    </td>
+
+                    {{-- Status --}}
+                    <td>
+                      @if ($report['status'] === 'pending')
+                        <span class="badge bg-warning">Pending</span>
+                      @else
+                        <span class="badge bg-success">Resolved</span>
+                      @endif
+                    </td>
+
+                    {{-- Admin Action --}}
+                    <td style="max-width:300px;">
+                      @if ($report['status'] === 'resolved' && !empty($report['action']))
+                        <div>
+                          <strong>{{ $report['action']['action'] }}</strong>
                         </div>
-                    </div>
-                </div>
-            @endforeach
+                        <div class="text-muted small">
+                          {{ $report['action']['note'] }}
+                        </div>
+                      @else
+                        <span class="text-muted">-</span>
+                      @endif
+                    </td>
+
+                    {{-- Created --}}
+                    <td>
+                      {{ $report['created_at'] }}
+                    </td>
+
+                    {{-- Updated --}}
+                    <td>
+                      {{ $report['updated_at'] }}
+                    </td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="7" class="text-center text-muted py-4">
+                      You have not submitted any reports yet.
+                    </td>
+                  </tr>
+                @endforelse
+                </tbody>
+              </table>
+            </div>
+
+          </div>
         </div>
-
-        <hr class="my-4">
-
-        <h2 class="text-navy">Submit Assignment</h2>
-
-        <div class="card shadow-sm p-4" style="max-width: 600px;">
-            <form>
-
-                <label class="fw-bold">Select Course</label>
-                <select class="form-select mb-3">
-                    <option>Mathematics</option>
-                    <option>Science</option>
-                    <option>English</option>
-                </select>
-
-                <label class="fw-bold">Assignment Title</label>
-                <input type="text" class="form-control mb-3" placeholder="Assignment title">
-
-                <label class="fw-bold">Upload File / Link</label>
-                <input type="file" class="form-control mb-3">
-
-                <button class="btn btn-navy">Submit</button>
-
-            </form>
-        </div>
-
     </div>
 
     <!-- Bootstrap JS -->

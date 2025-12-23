@@ -74,62 +74,62 @@ class AuthController extends Controller
     }
 
     public function login(Request $request)
-{
-    $validated = $request->validate([
-        'email' => 'required|email',
-        'password' => 'required|min:6',
-    ]);
-
-    try {
-        $signInResult = $this->auth->signInWithEmailAndPassword(
-            $validated['email'],
-            $validated['password']
-        );
-
-        $uid = $signInResult->firebaseUserId();
-        $userData = $this->db->getReference('users/' . $uid)->getValue();
-        $role = $userData['role'] ?? 'guest';
-
-        Session::put('uid', $uid);
-        Session::put('role', $role);
-        Session::put('firebase_user', [
-            'email' => $validated['email'],
+    {
+        $validated = $request->validate([
+            'email' => 'required|email',
+            'password' => 'required|min:6',
         ]);
 
-        // Redirect based on role
-        return $this->redirectByRole($role);
+        try {
+            $signInResult = $this->auth->signInWithEmailAndPassword(
+                $validated['email'],
+                $validated['password']
+            );
 
-    } catch (InvalidPassword $e) {
-        return back()->with('error', 'Wrong password.');
-    } catch (UserNotFound $e) {
-        return back()->with('error', 'User does not exist.');
-    } catch (\Throwable $e) {
-        return back()->with('error', 'Login failed: ' . $e->getMessage());
-    }
-}
+            $uid = $signInResult->firebaseUserId();
+            $userData = $this->db->getReference('users/' . $uid)->getValue();
+            $role = $userData['role'] ?? 'guest';
 
-protected function redirectByRole($role)
-{
-    switch ($role) {
-        case 'admin':
-            return redirect('/admin_dashboard');
-        case 'student':
-            return redirect('/student_dashboard');
-        case 'lecturer':
-            return redirect('/lecturer_dashboard');
-        case 'parent':
-            return redirect('/parent_dashboard');
-        default:
-            return redirect('/login');
+            Session::put('uid', $uid);
+            Session::put('role', $role);
+            Session::put('firebase_user', [
+                'email' => $validated['email'],
+            ]);
+
+            // Redirect based on role
+            return $this->redirectByRole($role);
+
+        } catch (InvalidPassword $e) {
+            return back()->with('error', 'Wrong password.');
+        } catch (UserNotFound $e) {
+            return back()->with('error', 'User does not exist.');
+        } catch (\Throwable $e) {
+            return back()->with('error', 'Login failed: ' . $e->getMessage());
+        }
     }
-}
+
+    protected function redirectByRole($role)
+    {
+        switch ($role) {
+            case 'admin':
+                return redirect('/admin_dashboard');
+            case 'student':
+                return redirect('/student_dashboard');
+            case 'lecturer':
+                return redirect('/lecturer_dashboard');
+            case 'parent':
+                return redirect('/parent_dashboard');
+            default:
+                return redirect('/login');
+        }
+    }
 
 
 
     // 🔹 Logout
     public function logout()
     {
-        Session::flush();
+        session()->flush();
         return redirect('/login');
     }
 }

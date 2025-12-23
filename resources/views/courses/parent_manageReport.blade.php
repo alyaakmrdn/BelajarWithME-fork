@@ -148,102 +148,102 @@
 
     <!-- MAIN CONTENT -->
     <!-- MAIN CONTENT -->
-<div class="main-content p-4" id="mainContent">
-<div style="height: 80px;"></div>
-    <h2 class="text-green">My Children</h2>
-
-    <div class="row g-3">
-
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Child 1</h5>
-                    <p class="card-text">Class: Form 4</p>
-                    <button class="btn btn-green">View Grades</button>
-                </div>
-            </div>
+    <div class="main-content p-4" id="mainContent">
+        {{-- Page Header --}}
+        <div class="d-flex justify-content-between align-items-center mb-4 mt-5">
+          <div>
+            <h3 class="mb-1">Child Reports</h3>
+            <p class="text-muted mb-0">
+              View reports submitted by your child
+            </p>
+          </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Child 2</h5>
-                    <p class="card-text">Class: Form 5</p>
-                    <button class="btn btn-green">View Grades</button>
-                </div>
-            </div>
-        </div>
+        {{-- Reports Table --}}
+        <div class="card shadow-sm">
+          <div class="card-body">
 
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Child 3</h5>
-                    <p class="card-text">Class: Form 3</p>
-                    <button class="btn btn-green">View Grades</button>
-                </div>
+            <div class="table-responsive">
+              <table class="table table-hover align-middle">
+                <thead class="table-light">
+                  <tr>
+                    <th>#</th>
+                    <th>Child</th>
+                    <th>Course</th>
+                    <th>Reason</th>
+                    <th>Description</th>
+                    <th>Status</th>
+                    <th>Admin Action</th>
+                    <th>Submitted At</th>
+                  </tr>
+                </thead>
+
+                <tbody>
+                @forelse ($reports as $index => $report)
+                  <tr>
+                    <td>{{ $index + 1 }}</td>
+
+                    {{-- Child --}}
+                    <td>
+                      <strong>{{ $report['child_name'] }}</strong>
+                    </td>
+
+                    {{-- Course --}}
+                    <td>{{ $report['course_name'] }}</td>
+
+                    {{-- Reason --}}
+                    <td>
+                      <span class="badge bg-info text-dark">
+                        {{ ucfirst(str_replace('_', ' ', $report['reason'])) }}
+                      </span>
+                    </td>
+
+                    {{-- Description --}}
+                    <td style="max-width: 300px;">
+                      <div class="text-truncate">
+                        {{ $report['description'] }}
+                      </div>
+                    </td>
+
+                    {{-- Status --}}
+                    <td>
+                      @if ($report['status'] === 'pending')
+                        <span class="badge bg-warning">Pending</span>
+                      @else
+                        <span class="badge bg-success">Resolved</span>
+                      @endif
+                    </td>
+
+                    {{-- Admin Action --}}
+                    <td style="max-width:300px;">
+                      @if ($report['status'] === 'resolved' && !empty($report['action']))
+                        <div><strong>{{ $report['action']['action'] }}</strong></div>
+                        <div class="text-muted small">
+                          {{ $report['action']['note'] }}
+                        </div>
+                      @else
+                        <span class="text-muted">-</span>
+                      @endif
+                    </td>
+
+                    {{-- Date --}}
+                    <td>{{ $report['created_at'] }}</td>
+                  </tr>
+                @empty
+                  <tr>
+                    <td colspan="8" class="text-center text-muted py-4">
+                      No reports found for your child.
+                    </td>
+                  </tr>
+                @endforelse
+                </tbody>
+              </table>
             </div>
+
+          </div>
         </div>
 
     </div>
-
-    <hr class="my-4">
-
-    <!-- Courses Section -->
-    <h2 class="text-green">Available Courses</h2>
-
-    <div class="row g-3">
-
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Mathematics</h5>
-                    <p class="card-text">Class: Form 4</p>
-                    <p class="card-text">Price: $50</p>
-                    <button class="btn btn-green">Enrol</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">Science</h5>
-                    <p class="card-text">Class: Form 5</p>
-                    <p class="card-text">Price: $60</p>
-                    <button class="btn btn-green">Enrol</button>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h5 class="card-title">English</h5>
-                    <p class="card-text">Class: Form 3</p>
-                    <p class="card-text">Price: $40</p>
-                    <button class="btn btn-green">Enrol</button>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <hr class="my-4">
-
-    <h2 class="text-green">Notifications / Messages</h2>
-
-    <div class="card shadow-sm p-4" style="max-width: 600px;">
-        <form>
-
-            <label class="fw-bold">Send Message</label>
-            <textarea class="form-control mb-3" rows="4" placeholder="Write message to teachers or school"></textarea>
-
-            <button class="btn btn-green">Send</button>
-
-        </form>
-    </div>
-
-</div>
 
 
     <!-- Bootstrap JS -->
