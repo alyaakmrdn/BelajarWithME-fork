@@ -89,6 +89,8 @@ Route::get('/parent/transactions', [ParentController::class, 'transactions'])->n
 Route::get('/admin/transactions', [AdminController::class, 'transactions'])
     ->name('admin.transactions');
 
+Route::get('/admin/enrollments', [AdminController::class, 'enrollmentPage'])
+    ->name('admin.enrollments');
 
 /*
 |--------------------------------------------------------------------------

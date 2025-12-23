@@ -26,11 +26,47 @@
 @endpush
 
 @section('content')
-    
+
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2 class="text-purple m-0">All Transactions</h2>
         <span class="badge bg-light text-dark border">{{ count($transactions) }} Total</span>
     </div>
+
+    <div class="card shadow-sm mb-4 border-0">
+    <div class="card-body">
+        <form method="GET" class="row g-2 align-items-end">
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Student</label>
+                <select name="child_id" class="form-select">
+                    <option value="">All Students</option>
+                    @foreach($studentsDropdown as $id => $name)
+                        <option value="{{ $id }}" {{ request('child_id')==$id?'selected':'' }}>
+                            {{ $name }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-4">
+                <label class="form-label fw-bold small">Course</label>
+                <select name="course_id" class="form-select">
+                    <option value="">All Courses</option>
+                    @foreach($coursesDropdown as $id => $title)
+                        <option value="{{ $id }}" {{ request('course_id')==$id?'selected':'' }}>
+                            {{ $title }}
+                        </option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-3 d-flex gap-2">
+                <button class="btn btn-primary w-100">Filter</button>
+                <a href="{{ request()->url() }}" class="btn btn-light border w-100">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
 
 <div class="card border-0 shadow-sm">
     <div class="card-body p-0">

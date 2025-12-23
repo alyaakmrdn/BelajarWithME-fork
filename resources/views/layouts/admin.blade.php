@@ -106,6 +106,10 @@
         </li>
 
         <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.enrollments') }}">Enrollments</a>
+        </li>
+
+        <li class="nav-item">
             <a class="nav-link" href="#">Lecturers</a>
         </li>
 
