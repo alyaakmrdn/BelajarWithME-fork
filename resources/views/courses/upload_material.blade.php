@@ -1,4 +1,4 @@
-<h3 class="mt-4">Mathematics Content</h3>
+<!--<h3 class="mt-4">Mathematics Content</h3>
 <ul class="list-group mb-3">
     <li class="list-group-item d-flex justify-content-between align-items-center">
         Algebra Notes
@@ -15,3 +15,4 @@
         </div>
     </li>
 </ul>
+-->

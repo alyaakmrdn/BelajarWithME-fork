@@ -124,8 +124,6 @@ protected function redirectByRole($role)
     }
 }
 
-
-
     // 🔹 Logout
     public function logout()
     {
