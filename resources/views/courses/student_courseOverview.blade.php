@@ -24,8 +24,8 @@
 
 
                         <p class="card-text">
-                            <strong>Course Code:</strong> {{ $courseId }} <br>
-                            <strong>Lecturer:</strong> {{ $course['lecturer_email'] }} <br>
+                            <!-- <strong>Course Code:</strong> {{ $courseId }} <br>
+                            <strong>Lecturer:</strong> {{ $course['lecturer_email'] }} <br> -->
                             <strong>Status:</strong> {{ ucfirst($course['status']) }}
                         </p>
 
@@ -36,12 +36,6 @@
                         @endif
 
                         <div class="d-flex justify-content-between">
-                            <a
-                                href="#"
-                                class="btn btn-primary btn-sm {{ $isInactive ? 'disabled' : '' }}">
-                                View
-                            </a>
-
                             <button
                                 class="btn btn-outline-danger btn-sm" type="button"
                                     data-bs-toggle="modal"
@@ -113,5 +107,28 @@
     </div>
     @endif
 </div>
+
+<script>
+        document.querySelectorAll('[id^="reportModal-"]').forEach(function (modal) {
+            modal.addEventListener('show.bs.modal', function (event) {
+                const button = event.relatedTarget;
+                const course = button.getAttribute('data-course');
+
+                const input = modal.querySelector('input[name="course_id"]');
+                if (input && course) {
+                    input.value = course;
+                }
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            @if(session('success'))
+                var successModal = new bootstrap.Modal(
+                    document.getElementById('successModal')
+                );
+                successModal.show();
+            @endif
+        }); 
+    </script>
 
 @endsection
