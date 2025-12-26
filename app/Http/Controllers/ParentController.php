@@ -4,16 +4,17 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
+use Kreait\Firebase\Database;
 use App\Services\FirebaseService;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ParentController extends Controller
 {
-    protected $db;
+    protected Database $database;
 
-    public function __construct(FirebaseService $firebase)
+    public function __construct()
     {
-        $this->db = $firebase->db();
+        $this->database = app('firebase.database');
     }
 
     // Parent Dashboard
@@ -27,7 +28,7 @@ class ParentController extends Controller
     $parent_uid = Session::get('uid');
 
     // Fetch children from Firebase
-    $users = $this->db->getReference('users')->getValue();
+    $users = $this->database->getReference('users')->getValue();
 
 $childrenCount = 0;
 
@@ -54,8 +55,8 @@ public function transactions(Request $request)
 
     $parent_uid = Session::get('uid');
 
-    $allTransactions = $this->db->getReference('enrollments')->getValue() ?? [];
-    $users = $this->db->getReference('users')->getValue() ?? [];
+    $allTransactions = $this->database->getReference('enrollments')->getValue() ?? [];
+    $users = $this->database->getReference('users')->getValue() ?? [];
     $dummyCourses = app(\App\Http\Controllers\CourseController::class)->getDummyCourses();
 
     $transactions = [];
@@ -131,7 +132,7 @@ public function children()
     
 
     // Fetch children from Firebase
-    $snapshot = $this->db
+    $snapshot = $this->database
         ->getReference('users')
         ->orderByChild('parent_uid')  // Make sure parent_uid is consistent
         ->equalTo($parent_uid)
@@ -164,7 +165,7 @@ public function coursesPage(Request $request)
     $parent_uid = session('uid');
 
     // Fetch children from Firebase
-    $snapshot = $this->db
+    $snapshot = $this->database
         ->getReference('users')
         ->orderByChild('parent_uid')  // Make sure parent_uid is consistent
         ->equalTo($parent_uid)
@@ -186,8 +187,8 @@ public function coursesPage(Request $request)
     }
 
 $dummyCourses = app(\App\Http\Controllers\CourseController::class)->getDummyCourses();
-    $allTransactions = $this->db->getReference('enrollments')->getValue() ?? [];
-$users = $this->db->getReference('users')->getValue() ?? [];
+    $allTransactions = $this->database->getReference('enrollments')->getValue() ?? [];
+$users = $this->database->getReference('users')->getValue() ?? [];
 
 $childTransactions = [];
 
@@ -224,4 +225,85 @@ foreach ($allTransactions as $t) {
 
 
 
+
+    public function manageReports()
+    {
+        $parentUid = session('uid');
+
+        if (!$parentUid || session('role') !== 'parent') {
+            return redirect()->route('login');
+        }
+
+        /** 1️⃣ Get parent user info */
+        $parent = $this->database
+            ->getReference("users/{$parentUid}")
+            ->getValue();
+
+        if (!$parent || empty($parent['child_id'])) {
+            return view('courses.parent_manageReport', [
+                'reports' => []
+            ]);
+        }
+
+        $childUid = $parent['child_id'];
+
+        $child = $this->database
+            ->getReference("users/{$childUid}")
+            ->getValue();
+
+        $childName = $child['name'] ?? 'Child';
+
+        /** 2️⃣ Get all reports */
+        $reportsRaw = $this->database
+            ->getReference('reports')
+            ->getValue() ?? [];
+
+        /** 3️⃣ Get courses (for course names) */
+        $courses = $this->database
+            ->getReference('courses')
+            ->getValue() ?? [];
+
+        $reports = [];
+
+        foreach ($reportsRaw as $reportId => $report) {
+            if (!is_array($report)) continue;
+
+            // ✅ Only reports submitted by this parent's child
+            if (($report['reporter_id'] ?? null) !== $childUid) {
+                continue;
+            }
+
+            $courseId = $report['course_id'] ?? null;
+
+            $reports[] = [
+                'id'           => $reportId,
+                'child_name'   => $childName,
+                'course_name'  => $courses[$courseId]['name'] ?? $courseId,
+                'reason'       => $report['reason'] ?? '-',
+                'description'  => $report['description'] ?? '-',
+                'status'       => $report['status'] ?? 'pending',
+                'created_at'   => $report['created_at'] ?? '-',
+                'updated_at'   => $report['updated_at'] ?? '-',
+                'action'       => $this->getReportAction($reportId),
+            ];
+        }
+
+        return view('courses.parent_manageReport', [
+            'reports' => $reports
+        ]);
+    }
+
+    /** 🔹 Fetch admin action (same as student side) */
+    private function getReportAction(string $reportId): ?array
+    {
+        $actions = $this->database
+            ->getReference('report_action')
+            ->orderByChild('report_id')
+            ->equalTo($reportId)
+            ->getValue();
+
+        if (!$actions) return null;
+
+        return collect($actions)->first();
+    }
 }

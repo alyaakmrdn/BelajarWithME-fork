@@ -62,6 +62,41 @@
                     <h5 class="mb-0">My Courses</h5>
                 </div>
 
+                @foreach($courses as $course)
+                    @php
+                        $isInactive = ($course['status'] ?? 'active') === 'inactive';
+                    @endphp
+                    <div class="col-md-4">
+                        <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $course['name'] }}
+                                    @if($isInactive)
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    @endif
+                                </h5>
+                                
+
+                                <p class="card-text">
+                                    Lecturer: {{ $course['lecturer_email'] }} <br>
+                                    Status: {{ ucfirst($course['status']) }}
+                                </p>
+
+                                @if($isInactive)
+                                    <div class="alert alert-warning small mt-2">
+                                        This course has been deactivated by admin.
+                                    </div>
+                                @endif
+
+                                <a
+                                    href="#"
+                                    class="btn btn-primary btn-sm {{ $isInactive ? 'disabled' : '' }}">
+                                    View
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                @endforeach
+
                 <div class="card-body">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">

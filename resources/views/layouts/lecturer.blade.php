@@ -105,7 +105,7 @@
         <ul class="nav flex-column">
 
             <li class="nav-item">
-                <a class="nav-link" href="#">Dashboard</a>
+                <a class="nav-link" href="{{ route('lecturer.dashboard') }}">Dashboard</a>
             </li>
 
             <!-- Courses Menu -->
@@ -124,6 +124,10 @@
 
             <li class="nav-item">
                 <a class="nav-link" href="#">Assignments</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{route('lecturer.notifications')}}">Notification</a>
             </li>
 
             <!-- Profile -->

@@ -69,6 +69,15 @@
 .hover-shadow:hover { box-shadow: 0 .5rem 1rem rgba(0,0,0,.15)!important;}
 .transition { transition: 0.3s; }
 
+        .course-inactive {
+            opacity: 0.6;
+            filter: grayscale(100%);
+            pointer-events: none;
+        }
+
+        .course-inactive .badge {
+            pointer-events: auto;
+        }
     </style>
     @stack('styles')
 </head>
@@ -117,13 +126,14 @@
         <ul class="nav flex-column">
 
             <li class="nav-item">
-                <a class="nav-link" href="/student_dashboard">Dashboard</a>
+                <a class="nav-link" href="{{ route('student.dashboard') }}">Dashboard</a>
             </li>
 
             <!-- Courses Menu -->
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('student.courses') }}">My Courses</a>
                 <div class="collapse ps-3" id="coursesMenu">
+                    <a href="{{ route('student.course.overview') }}" class="nav-link">Course Overview</a>
                 </div>
             </li>
 
@@ -133,6 +143,10 @@
 
             <li class="nav-item">
                 <a class="nav-link" href="#">Grades</a>
+            </li>
+
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('student.report.status') }}">Report Status</a>
             </li>
 
             <!-- Profile -->
@@ -169,6 +183,23 @@
             document.getElementById("sidebar").classList.toggle("collapsed");
             document.getElementById("mainContent").classList.toggle("expanded");
         };
+
+        const reportModal = document.getElementById('reportModal');
+
+        reportModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const course = button.getAttribute('data-course');
+            document.getElementById('courseCode').value = course;
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            @if(session('success'))
+                var successModal = new bootstrap.Modal(
+                    document.getElementById('successModal')
+                );
+                successModal.show();
+            @endif
+        }); 
     </script>
 
     @stack('scripts')

@@ -28,10 +28,11 @@ Route::get('/logout', [AuthController::class, 'logout']);
 | Dashboards
 |--------------------------------------------------------------------------
 */
-Route::get('/admin_dashboard', [AdminController::class, 'index']);
-Route::get('/student_dashboard', [StudentController::class, 'index']);
-Route::get('/lecturer_dashboard', [LecturerController::class, 'index']);
-Route::get('/parent_dashboard', [ParentController::class, 'index'])->name('parent.dashboard');
+//temp deleted
+// Route::get('/admin_dashboard', [AdminController::class, 'index']);
+// Route::get('/student_dashboard', [StudentController::class, 'index']);
+// Route::get('/lecturer_dashboard', [LecturerController::class, 'index']);
+// Route::get('/parent_dashboard', [ParentController::class, 'index'])->name('parent.dashboard');
 
 /*
 |--------------------------------------------------------------------------
@@ -100,3 +101,37 @@ Route::get('/admin/enrollments', [AdminController::class, 'enrollmentPage'])
 //Route::get('/student/courses/{courseId}/materials', [StudentController::class, 'materials'])->name('student.materials');
 //Route::get('/children/add', function () {return view('parent.add_child');})->name('children.add');
 //Route::post('/children/store', [ParentController::class, 'storeChild'])->name('children.store');
+
+
+//student routes
+Route::middleware(['firebase.session', 'role:student'])->group(function () {
+    Route::get('/student_dashboard', [StudentController::class, 'index'])
+        ->name('student.dashboard');
+    // Course overview page
+    Route::get('/student/coursesOverview', [StudentController::class, 'courseOverview'])
+        ->name('student.course.overview');
+    // Submit report (POST)
+    Route::post('/student/report', [StudentController::class, 'reportCourse'])
+        ->name('student.report.submit');
+    Route::get('/student/reports', [StudentController::class, 'reportStatus'])
+     ->name('student.report.status');
+});
+
+//admin routes
+Route::middleware(['firebase.session', 'role:admin'])->group(function () {
+    Route::get('/admin_dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('/admin/manage-reports', [AdminController::class, 'manageReports'])->name('admin.manage.reports');
+    Route::post('/admin/report/resolve',[AdminController::class, 'resolveReport'])->name('admin.resolve.report');
+});
+
+//lecturer routes
+Route::middleware(['firebase.session', 'role:lecturer'])->group(function () {
+    Route::get('/lecturer_dashboard', [LecturerController::class, 'index'])->name('lecturer.dashboard');
+    Route::get('/lecturer/notifications', [LecturerController::class, 'notificationIndex'])->name('lecturer.notifications');
+});
+
+//parent routes
+Route::middleware(['firebase.session', 'role:parent'])->group(function () {
+    Route::get('/parent_dashboard', [ParentController::class, 'index'])->name('parent.dashboard');
+    Route::get('/parent/manage-reports', [ParentController::class, 'manageReports'])->name('parent.manage.reports');
+});

@@ -92,7 +92,7 @@
     <div class="sidebar p-3" id="sidebar">
         <h4 class="text-center mb-4">Menu</h4>
         <ul class="nav flex-column">
-            <li class="nav-item"><a class="nav-link" href="/parent_dashboard">Dashboard</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{ route('parent.dashboard')}}">Dashboard</a></li>
             <li class="nav-item">
                 <a class="nav-link" href="{{ route('parent.children') }}">My Children</a>
                 <!--<div class="collapse ps-3" id="childrenMenu">
@@ -103,6 +103,9 @@
             </li>
             <a class="nav-link" href="{{ route('parent.courses') }}">Courses</a>
             <li class="nav-item"><a class="nav-link" href="#">Grades & Reports</a></li>
+            <li class="nav-item">
+                <a class="nav-link" href="{{ route('parent.manage.reports')}}">View Reports</a>
+            </li>
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
                 <div class="collapse ps-3" id="profileMenu">

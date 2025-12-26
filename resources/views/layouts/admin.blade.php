@@ -94,7 +94,7 @@
 
     <ul class="nav flex-column">
         <li class="nav-item">
-            <a class="nav-link" href="{{ url('/admin_dashboard') }}">Dashboard</a>
+            <a class="nav-link" href="{{ route('admin.dashboard') }}">Dashboard</a>
         </li>
 
         <li class="nav-item">
@@ -111,6 +111,10 @@
 
         <li class="nav-item">
             <a class="nav-link" href="#">Lecturers</a>
+        </li>
+
+        <li class="nav-item">
+            <a class="nav-link" href="{{ route('admin.manage.reports') }}">Manage Reports</a>
         </li>
 
         <li class="nav-item">
