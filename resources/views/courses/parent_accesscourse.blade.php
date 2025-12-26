@@ -1,5 +1,5 @@
 <?php
-include 'dummy_courses.php';
+/*include 'dummy_courses.php';
 $courseId = $_GET['course_id'] ?? 0;
 
 // Find course
@@ -17,4 +17,4 @@ echo "<h2>{$course['title']} - Materials</h2><ul>";
 foreach ($course['materials'] as $material) {
     echo "<li>{$material['type']}: <a href='{$material['url']}'>{$material['title']}</a></li>";
 }
-echo "</ul>";
+echo "</ul>";*/

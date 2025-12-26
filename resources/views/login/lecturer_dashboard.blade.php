@@ -1,232 +1,150 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lecturer Dashboard</title>
+@extends('layouts.lecturer') {{-- adjust path if needed --}}
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'Lecturer Dashboard')
 
-    <style>
-        body {
-            background-color: #fff5f5; /* light cherry background */
-        }
+@section('content')
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background-color: #b3002d; /* cherry red */
-            position: fixed;
-            height: 100%;
-            color: #fff;
-            transition: 0.3s;
-            overflow-y: auto;
-        }
+<div class="container-fluid">
 
-        .sidebar.collapsed {
-            margin-left: -250px;
-        }
+    <!-- Page Title -->
+    <h2 class="fw-bold text-cherry mb-4">Welcome back, Lecturer 👩‍🏫</h2>
 
-        .sidebar a {
-            color: #fff;
-        }
+    <!-- SUMMARY CARDS -->
+    <div class="row g-4 mb-4">
 
-        .sidebar .nav-link:hover {
-            background-color: #7a001f; /* darker cherry red */
-        }
-
-        /* MAIN CONTENT */
-        .main-content {
-            margin-left: 260px;
-            transition: 0.3s;
-        }
-
-        .main-content.expanded {
-            margin-left: 20px;
-        }
-
-        .text-cherry {
-            color: #b3002d;
-        }
-
-        .btn-cherry {
-            background-color: #b3002d;
-            color: white;
-        }
-        .btn-cherry:hover {
-            background-color: #7a001f;
-            color: white;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
-        <button class="btn btn-outline-secondary me-3" id="toggleSidebar">
-            ☰
-        </button>
-
-        <a class="navbar-brand fw-bold text-cherry" href="#">
-            Lecturer Dashboard
-        </a>
-
-        <div class="ms-auto"></div>
-
-        <!-- Search Bar -->
-        <form class="d-none d-md-flex me-3">
-            <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
-        </form>
-
-        <!-- Profile Dropdown -->
-        <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                <img src="https://via.placeholder.com/40" class="rounded-circle me-2">
-                <span>Lecturer</span>
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                <li><a class="dropdown-item" href="#">Change Password</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
-            </ul>
-        </div>
-    </nav>
-
-    <!-- SIDEBAR -->
-    <div class="sidebar p-3" id="sidebar">
-        <h4 class="text-center mb-4">Menu</h4>
-
-        <ul class="nav flex-column">
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('lecturer.dashboard') }}">Dashboard</a>
-            </li>
-
-            <!-- Courses Menu -->
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#coursesMenu">My Courses ▾</a>
-                <div class="collapse ps-3" id="coursesMenu">
-                    <a href="#" class="nav-link">Mathematics</a>
-                    <a href="#" class="nav-link">Science</a>
-                    <a href="#" class="nav-link">English</a>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Students</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Assignments</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{route('lecturer.notifications')}}">Notification</a>
-            </li>
-
-            <!-- Profile -->
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
-                <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
-                    <a href="#" class="nav-link">Change Password</a>
-                </div>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link text-danger" href="/logout">Logout</a>
-            </li>
-
-        </ul>
-    </div>
-
-    <!-- MAIN CONTENT -->
-    <div class="main-content p-4" id="mainContent">
-        <div style="height: 80px;"></div>
-        <h2 class="text-cherry">Subjects</h2>
-
-        <div class="row g-3">
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Mathematics</h5>
-                        <p class="card-text">Class: Form 4</p>
-                        <button class="btn btn-cherry">Manage Content</button>
-                    </div>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">My Courses</h6>
+                    <h2 class="fw-bold text-danger">3</h2>
                 </div>
             </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Science</h5>
-                        <p class="card-text">Class: Form 5</p>
-                        <button class="btn btn-cherry">Manage Content</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">English</h5>
-                        <p class="card-text">Class: Form 3</p>
-                        <button class="btn btn-cherry">Manage Content</button>
-                    </div>
-                </div>
-            </div>
-
         </div>
 
-        <hr class="my-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Total Students</h6>
+                    <h2 class="fw-bold text-primary">45</h2>
+                </div>
+            </div>
+        </div>
 
-        <h2 class="text-cherry">Upload New Teaching Material</h2>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Pending Assignments</h6>
+                    <h2 class="fw-bold text-warning">6</h2>
+                </div>
+            </div>
+        </div>
 
-        <div class="card shadow-sm p-4" style="max-width: 600px;">
-            <form>
-
-                <label class="fw-bold">Select Subject</label>
-                <select class="form-select mb-3">
-                    <option>Mathematics</option>
-                    <option>Science</option>
-                    <option>English</option>
-                </select>
-
-                <label class="fw-bold">Material Type</label>
-                <select class="form-select mb-3">
-                    <option>Note</option>
-                    <option>Video</option>
-                    <option>Article</option>
-                    <option>Quiz</option>
-                </select>
-
-                <label class="fw-bold">Title</label>
-                <input type="text" class="form-control mb-3" placeholder="Material title">
-
-                <label class="fw-bold">Description / URL</label>
-                <textarea class="form-control mb-3" rows="4" placeholder="Add description or link"></textarea>
-
-                <button class="btn btn-cherry">Upload Material</button>
-
-            </form>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm text-center">
+                <div class="card-body">
+                    <h6 class="text-muted">Classes This Week</h6>
+                    <h2 class="fw-bold text-success">5</h2>
+                </div>
+            </div>
         </div>
 
     </div>
 
-    <!-- JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- MAIN CONTENT ROW -->
+    <div class="row g-4">
 
-    <script>
-        document.getElementById("toggleSidebar").onclick = function () {
-            document.getElementById("sidebar").classList.toggle("collapsed");
-            document.getElementById("mainContent").classList.toggle("expanded");
-        };
-    </script>
+        <!-- COURSE OVERVIEW -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header btn-cherry">
+                    <h5 class="mb-0">Course Overview</h5>
+                </div>
 
-</body>
-</html>
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Course</th>
+                                <th>Students</th>
+                                <th>Assignments</th>
+                                <th>Progress</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mathematics</td>
+                                <td>18</td>
+                                <td>3</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-danger" style="width: 70%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Science</td>
+                                <td>15</td>
+                                <td>2</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning" style="width: 55%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>English</td>
+                                <td>12</td>
+                                <td>1</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- ANNOUNCEMENTS & TASKS -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header btn-cherry">
+                    <h5 class="mb-0">Announcements</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3 p-3 bg-light border-start border-danger border-4 rounded">
+                        <strong>📢 Exam Preparation</strong>
+                        <p class="mb-0 small">Prepare final exam questions.</p>
+                    </div>
+
+                    <div class="mb-3 p-3 bg-light border-start border-warning border-4 rounded">
+                        <strong>📝 Assignment Review</strong>
+                        <p class="mb-0 small">6 assignments pending grading.</p>
+                    </div>
+
+                    <div class="p-3 bg-light border-start border-success border-4 rounded">
+                        <strong>📅 Class Reminder</strong>
+                        <p class="mb-0 small">English class on Thursday.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- QUICK ACTIONS -->
+            <div class="card border-0 shadow-sm">
+                <div class="card-header btn-cherry">
+                    <h5 class="mb-0">Quick Actions</h5>
+                </div>
+                <div class="card-body d-grid gap-2">
+                    <a href="#" class="btn btn-outline-danger">Add Assignment</a>
+                    <a href="#" class="btn btn-outline-warning">View Students</a>
+                    <a href="#" class="btn btn-outline-success">Create Announcement</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+@endsection

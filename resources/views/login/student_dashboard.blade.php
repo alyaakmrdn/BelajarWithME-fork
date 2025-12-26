@@ -1,240 +1,166 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
+@extends('layouts.student') {{-- change to your actual layout path --}}
 
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+@section('title', 'Student Dashboard')
 
-    <style>
-        body {
-            background-color: #e6eaf0; /* light navy background */
-        }
+@section('content')
 
-        /* SIDEBAR */
-        .sidebar {
-            width: 250px;
-            background-color: #001f4d; /* navy blue */
-            position: fixed;
-            height: 100%;
-            color: #fff;
-            transition: 0.3s;
-            overflow-y: auto;
-        }
+<div class="container-fluid">
 
-        .sidebar.collapsed {
-            margin-left: -250px;
-        }
+    <!-- Page Title -->
+     <div class="col-md-8">
+    <h2 class="fw-bold text-navy mb-4">Welcome back, Student 👋</h2>
+    <p class="text-muted">Here is what's happening with your studies.</p>
+    </div>
+    <!-- STAT CARDS -->
+    <div class="row g-4 mb-4">
 
-        .sidebar a {
-            color: #fff;
-        }
-
-        .sidebar .nav-link:hover {
-            background-color: #001033; /* darker navy */
-        }
-
-        /* MAIN CONTENT */
-        .main-content {
-            margin-left: 260px;
-            transition: 0.3s;
-        }
-
-        .main-content.expanded {
-            margin-left: 20px;
-        }
-
-        .text-navy {
-            color: #001f4d;
-        }
-
-        .btn-navy {
-            background-color: #001f4d;
-            color: white;
-        }
-        .btn-navy:hover {
-            background-color: #001033;
-            color: white;
-        }
-
-        .course-inactive {
-            opacity: 0.6;
-            filter: grayscale(100%);
-            pointer-events: none;
-        }
-
-        .course-inactive .badge {
-            pointer-events: auto;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- TOP NAVBAR -->
-    <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
-        <!-- Toggle Sidebar -->
-        <button class="btn btn-outline-secondary me-3" id="toggleSidebar">
-            ☰
-        </button>
-
-        <!-- System Title -->
-        <a class="navbar-brand fw-bold text-navy" href="#">
-            Student Dashboard
-        </a>
-
-        <div class="ms-auto"></div>
-
-        <!-- Search Bar -->
-        <form class="d-none d-md-flex me-3">
-            <input class="form-control" type="search" placeholder="Search..." aria-label="Search">
-        </form>
-
-        <!-- Profile Dropdown -->
-        <div class="dropdown">
-            <a class="d-flex align-items-center text-decoration-none dropdown-toggle" data-bs-toggle="dropdown">
-                <!-- <img src="https://via.placeholder.com/40" class="rounded-circle me-2"> -->
-                <span>Student</span>
-            </a>
-
-            <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
-                <li><a class="dropdown-item" href="#">Change Password</a></li>
-                <li><hr class="dropdown-divider"></li>
-                <li><a href="/logout" class="dropdown-item text-danger">Logout</a></li>
-            </ul>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm hover-shadow transition">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Enrolled Courses</h6>
+                    <h2 class="fw-bold text-primary">4</h2>
+                </div>
+            </div>
         </div>
-    </nav>
 
-    <!-- SIDEBAR -->
-    <div class="sidebar p-3" id="sidebar">
-        <h4 class="text-center mb-4">Menu</h4>
-
-        <ul class="nav flex-column">
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('student.dashboard') }}">Dashboard</a>
-            </li>
-
-            <!-- Courses Menu -->
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#coursesMenu">My Courses ▾</a>
-                <div class="collapse ps-3" id="coursesMenu">
-                    <a href="{{ route('student.course.overview') }}" class="nav-link">Course Overview</a>
-                    <a href="#" class="nav-link">Mathematics</a>
-                    <a href="#" class="nav-link">Science</a>
-                    <a href="#" class="nav-link">English</a>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm hover-shadow transition">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Pending Assignments</h6>
+                    <h2 class="fw-bold text-danger">2</h2>
                 </div>
-            </li>
+            </div>
+        </div>
 
-            <li class="nav-item">
-                <a class="nav-link" href="#">Assignments</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="#">Grades</a>
-            </li>
-
-            <li class="nav-item">
-                <a class="nav-link" href="{{ route('student.report.status') }}">Report Status</a>
-            </li>
-
-            <!-- Profile -->
-            <li class="nav-item">
-                <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
-                <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
-                    <a href="#" class="nav-link">Change Password</a>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm hover-shadow transition">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Average Grade</h6>
+                    <h2 class="fw-bold text-success">85%</h2>
                 </div>
-            </li>
+            </div>
+        </div>
 
-            <li class="nav-item">
-                <a class="nav-link text-danger" href="/logout">Logout</a>
-            </li>
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm hover-shadow transition">
+                <div class="card-body text-center">
+                    <h6 class="text-muted">Upcoming Classes</h6>
+                    <h2 class="fw-bold text-warning">3</h2>
+                </div>
+            </div>
+        </div>
 
-        </ul>
     </div>
 
-    <!-- MAIN CONTENT -->
-    <div class="main-content p-4" id="mainContent">
-        <h2 class="text-navy">My Courses</h2>
+    <!-- MAIN ROW -->
+    <div class="row g-4">
 
-        <div class="row g-3">
-            @foreach($courses as $course)
-                @php
-                    $isInactive = ($course['status'] ?? 'active') === 'inactive';
-                @endphp
-                <div class="col-md-4">
-                    <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ $course['name'] }}
+        <!-- MY COURSES -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header hdr-navy">
+                    <h5 class="mb-0">My Courses</h5>
+                </div>
+
+                @foreach($courses as $course)
+                    @php
+                        $isInactive = ($course['status'] ?? 'active') === 'inactive';
+                    @endphp
+                    <div class="col-md-4">
+                        <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
+                            <div class="card-body">
+                                <h5 class="card-title">{{ $course['name'] }}
+                                    @if($isInactive)
+                                        <span class="badge bg-secondary">Inactive</span>
+                                    @endif
+                                </h5>
+                                
+
+                                <p class="card-text">
+                                    Lecturer: {{ $course['lecturer_email'] }} <br>
+                                    Status: {{ ucfirst($course['status']) }}
+                                </p>
+
                                 @if($isInactive)
-                                    <span class="badge bg-secondary">Inactive</span>
+                                    <div class="alert alert-warning small mt-2">
+                                        This course has been deactivated by admin.
+                                    </div>
                                 @endif
-                            </h5>
-                            
 
-                            <p class="card-text">
-                                Lecturer: {{ $course['lecturer_email'] }} <br>
-                                Status: {{ ucfirst($course['status']) }}
-                            </p>
-
-                            @if($isInactive)
-                                <div class="alert alert-warning small mt-2">
-                                    This course has been deactivated by admin.
-                                </div>
-                            @endif
-
-                            <a
-                                href="#"
-                                class="btn btn-primary btn-sm {{ $isInactive ? 'disabled' : '' }}">
-                                View
-                            </a>
+                                <a
+                                    href="#"
+                                    class="btn btn-primary btn-sm {{ $isInactive ? 'disabled' : '' }}">
+                                    View
+                                </a>
+                            </div>
                         </div>
                     </div>
+                @endforeach
+
+                <div class="card-body">
+                    <table class="table table-hover align-middle">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Course</th>
+                                <th>Tutor</th>
+                                <th>Progress</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Mathematics</td>
+                                <td>Mr. Ali</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-success" style="width: 80%"></div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-success">Active</span></td>
+                            </tr>
+                            <tr>
+                                <td>Science</td>
+                                <td>Ms. Aina</td>
+                                <td>
+                                    <div class="progress">
+                                        <div class="progress-bar bg-warning" style="width: 60%"></div>
+                                    </div>
+                                </td>
+                                <td><span class="badge bg-warning">Ongoing</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            @endforeach
+            </div>
         </div>
 
-        <hr class="my-4">
+        <!-- ANNOUNCEMENTS -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header hdr-navy">
+                    <h5 class="mb-0">Announcements</h5>
+                </div>
 
-        <h2 class="text-navy">Submit Assignment</h2>
+                <div class="card-body">
+                    <div class="mb-3 p-3 bg-primary-subtle rounded">
+                        <strong>📢 Exam Week</strong>
+                        <p class="mb-0 small">Final exams start next Monday.</p>
+                    </div>
 
-        <div class="card shadow-sm p-4" style="max-width: 600px;">
-            <form>
+                    <div class="mb-3 p-3 bg-success-subtle rounded">
+                        <strong>✅ Assignment Submitted</strong>
+                        <p class="mb-0 small">Math homework has been graded.</p>
+                    </div>
 
-                <label class="fw-bold">Select Course</label>
-                <select class="form-select mb-3">
-                    <option>Mathematics</option>
-                    <option>Science</option>
-                    <option>English</option>
-                </select>
-
-                <label class="fw-bold">Assignment Title</label>
-                <input type="text" class="form-control mb-3" placeholder="Assignment title">
-
-                <label class="fw-bold">Upload File / Link</label>
-                <input type="file" class="form-control mb-3">
-
-                <button class="btn btn-navy">Submit</button>
-
-            </form>
+                    <div class="p-3 bg-danger-subtle rounded">
+                        <strong>⚠ Class Rescheduled</strong>
+                        <p class="mb-0 small">Science class moved to Friday.</p>
+                    </div>
+                </div>
+            </div>
         </div>
 
     </div>
+</div>
 
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-    <!-- Sidebar Toggle Script -->
-    <script>
-        document.getElementById("toggleSidebar").onclick = function () {
-            document.getElementById("sidebar").classList.toggle("collapsed");
-            document.getElementById("mainContent").classList.toggle("expanded");
-        };
-    </script>
-
-</body>
-</html>
+@endsection

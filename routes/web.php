@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Session;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\StudentController;
@@ -9,39 +8,107 @@ use App\Http\Controllers\LecturerController;
 use App\Http\Controllers\ParentController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\EnrollmentController;
+use App\Http\Controllers\ChildController;
 
+/*
+|--------------------------------------------------------------------------
+| Authentication
+|--------------------------------------------------------------------------
+*/
 Route::get('/', [AuthController::class, 'showLogin']);
-
-// Auth routes
+Route::get('/login', [AuthController::class, 'showLogin']);
+Route::post('/login', [AuthController::class, 'login'])->middleware('throttle:5,1');
 Route::get('/signup', [AuthController::class, 'showSignup']);
 Route::post('/signup', [AuthController::class, 'signup']);
-Route::get('/login', [AuthController::class, 'showLogin']);
-Route::post('/login', [AuthController::class, 'login']);
 Route::get('/logout', [AuthController::class, 'logout']);
 
+/*
+|--------------------------------------------------------------------------
+| Dashboards
+|--------------------------------------------------------------------------
+*/
+//temp deleted
+// Route::get('/admin_dashboard', [AdminController::class, 'index']);
+// Route::get('/student_dashboard', [StudentController::class, 'index']);
+// Route::get('/lecturer_dashboard', [LecturerController::class, 'index']);
+// Route::get('/parent_dashboard', [ParentController::class, 'index'])->name('parent.dashboard');
 
+/*
+|--------------------------------------------------------------------------
+| Course Routes
+|--------------------------------------------------------------------------
+*/
+// Show courses for a child (parent/teacher view)
+Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
+// Enroll a child in a course
+Route::post('/courses/{course_id}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
 
-// Firebase test route
-Route::get('/firebase-test', function(\App\Services\FirebaseService $firebase){
-    $firebase->db()->getReference('test')->set(['time' => now()->toDateTimeString()]);
-    return 'Successfully written to Firebase Realtime DB!';
-});
+// Student course routes
+Route::get('/student/courses', [StudentController::class, 'courses'])->name('student.courses');
+Route::get('/student/courses/{course_id}/materials', [CourseController::class, 'materials'])->name('student.materials');
+//dashboard student my course menu
+Route::get('/student/courses/{course_id}/materials', [CourseController::class, 'materials'])->name('courses.materials');
+/*
+|--------------------------------------------------------------------------
+| Parent Specific Pages
+|--------------------------------------------------------------------------
+*/
+// Show all children (My Children menu)
+Route::get('/parent/children', [ParentController::class, 'children'])->name('parent.children');
+// Show all children (Courses menu)
+Route::get('/parent/courses', [ParentController::class, 'coursesPage'])->name('parent.courses');
 
-// List all courses
-Route::get('/courses', [CourseController::class, 'index']);
-// Show course details / enrolment page
-Route::get('/courses/{id}', [CourseController::class, 'show']);
-// Process payment for enrolment
-Route::post('/courses/{id}/payment', [PaymentController::class, 'process']);
-// Access course materials (check payment inside controller)
-Route::get('/courses/{id}/materials', [CourseController::class, 'materials']);
+/*
+|--------------------------------------------------------------------------
+| Child Controller (Add Child)
+|--------------------------------------------------------------------------
+*/
+Route::get('/children/add', [ChildController::class, 'create'])->name('children.add');
+Route::post('/children/store', [ChildController::class, 'store'])->name('children.store');
+// Add Child 
+Route::get('/parent/children/add', [ChildController::class, 'create'])->name('children.create');
+/*
+|--------------------------------------------------------------------------
+| Enrollment & Payment (Demo Flow)
+|--------------------------------------------------------------------------
+*/
+Route::get('/enrollment/register', [PaymentController::class, 'register'])->name('enrollment.register');
+Route::post('/enrollment/pay', [PaymentController::class, 'process'])->name('payment.process');
+Route::post('/enroll/summary', [EnrollmentController::class, 'summary'])->name('enroll.summary');
+Route::post('/enroll/payment', [EnrollmentController::class, 'payment'])->name('enroll.payment');
+Route::post('/enroll/confirm', [EnrollmentController::class, 'confirm'])->name('enroll.confirm');
+
+/*
+|--------------------------------------------------------------------------
+| Transactions
+|--------------------------------------------------------------------------
+*/
+Route::get('/parent/transactions', [ParentController::class, 'transactions'])->name('transactions');
+
+// Admin - View all transactions
+Route::get('/admin/transactions', [AdminController::class, 'transactions'])
+    ->name('admin.transactions');
+
+Route::get('/admin/enrollments', [AdminController::class, 'enrollmentPage'])
+    ->name('admin.enrollments');
+
+/*
+|--------------------------------------------------------------------------
+| Not Sure / Duplicate / Commented Out
+|--------------------------------------------------------------------------
+*/
+//Route::get('/student/courses/{courseId}/materials', [StudentController::class, 'materials'])->name('student.materials');
+//Route::get('/children/add', function () {return view('parent.add_child');})->name('children.add');
+//Route::post('/children/store', [ParentController::class, 'storeChild'])->name('children.store');
+
 
 //student routes
 Route::middleware(['firebase.session', 'role:student'])->group(function () {
     Route::get('/student_dashboard', [StudentController::class, 'index'])
         ->name('student.dashboard');
     // Course overview page
-    Route::get('/student/courses', [StudentController::class, 'courseOverview'])
+    Route::get('/student/coursesOverview', [StudentController::class, 'courseOverview'])
         ->name('student.course.overview');
     // Submit report (POST)
     Route::post('/student/report', [StudentController::class, 'reportCourse'])
@@ -52,7 +119,7 @@ Route::middleware(['firebase.session', 'role:student'])->group(function () {
 
 //admin routes
 Route::middleware(['firebase.session', 'role:admin'])->group(function () {
-    Route::get('/admin_dashboard', [AdminController::class, 'index']);
+    Route::get('/admin_dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
     Route::get('/admin/manage-reports', [AdminController::class, 'manageReports'])->name('admin.manage.reports');
     Route::post('/admin/report/resolve',[AdminController::class, 'resolveReport'])->name('admin.resolve.report');
 });
