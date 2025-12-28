@@ -234,64 +234,82 @@ foreach ($allTransactions as $t) {
             return redirect()->route('login');
         }
 
-        /** 1️⃣ Get parent user info */
-        $parent = $this->database
-            ->getReference("users/{$parentUid}")
-            ->getValue();
+        /** 1️⃣ Get all users */
+        $users = $this->database
+            ->getReference('users')
+            ->getValue() ?? [];
 
-        if (!$parent || empty($parent['child_id'])) {
-            return view('courses.parent_manageReport', [
+        /** 2️⃣ Find children linked to this parent */
+        $children = [];
+
+        foreach ($users as $userId => $user) {
+            if (
+                ($user['role'] ?? null) === 'student' &&
+                (
+                    ($user['parent_id'] ?? null) === $parentUid ||
+                    ($user['parent_uid'] ?? null) === $parentUid
+                )
+            ) {
+                $children[$userId] = $user['name'] ?? 'Unknown';
+            }
+        }
+
+        if (empty($children)) {
+            return view('parent.parent_manageReport', [
                 'reports' => []
             ]);
         }
 
-        $childUid = $parent['child_id'];
-
-        $child = $this->database
-            ->getReference("users/{$childUid}")
-            ->getValue();
-
-        $childName = $child['name'] ?? 'Child';
-
-        /** 2️⃣ Get all reports */
+        /** 3️⃣ Get reports */
         $reportsRaw = $this->database
             ->getReference('reports')
             ->getValue() ?? [];
 
-        /** 3️⃣ Get courses (for course names) */
+        /** 4️⃣ Get courses */
         $courses = $this->database
             ->getReference('courses')
+            ->getValue() ?? [];
+
+        /** 5️⃣ Get report actions */
+        $actionsRaw = $this->database
+            ->getReference('report_action')
             ->getValue() ?? [];
 
         $reports = [];
 
         foreach ($reportsRaw as $reportId => $report) {
-            if (!is_array($report)) continue;
+            $reporterId = $report['reporter_id'] ?? null;
 
-            // ✅ Only reports submitted by this parent's child
-            if (($report['reporter_id'] ?? null) !== $childUid) {
+            if (!isset($children[$reporterId])) {
                 continue;
+            }
+
+            // Find action for this report
+            $actionData = null;
+            foreach ($actionsRaw as $action) {
+                if (($action['report_id'] ?? null) === $reportId) {
+                    $actionData = $action;
+                    break;
+                }
             }
 
             $courseId = $report['course_id'] ?? null;
 
             $reports[] = [
-                'id'           => $reportId,
-                'child_name'   => $childName,
-                'course_name'  => $courses[$courseId]['name'] ?? $courseId,
-                'reason'       => $report['reason'] ?? '-',
-                'description'  => $report['description'] ?? '-',
-                'status'       => $report['status'] ?? 'pending',
-                'created_at'   => $report['created_at'] ?? '-',
-                'updated_at'   => $report['updated_at'] ?? '-',
-                'action'       => $this->getReportAction($reportId),
+                'id'          => $reportId,
+                'child_name'  => $children[$reporterId],
+                'course_name' => $courses[$courseId]['name'] ?? $courseId,
+                'reason'      => $report['reason'] ?? '-',
+                'description' => $report['description'] ?? '-',
+                'status'      => $report['status'] ?? 'pending',
+                'created_at'  => $report['created_at'] ?? '-',
+                'action'      => $actionData,
             ];
         }
 
-        return view('courses.parent_manageReport', [
-            'reports' => $reports
-        ]);
+        return view('courses.parent_manageReport', compact('reports'));
     }
+
 
     /** 🔹 Fetch admin action (same as student side) */
     private function getReportAction(string $reportId): ?array
