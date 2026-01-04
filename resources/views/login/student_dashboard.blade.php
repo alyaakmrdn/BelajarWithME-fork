@@ -69,7 +69,7 @@
                     <div class="col-md-4">
                         <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
                             <div class="card-body">
-                                <h5 class="card-title">{{ $course['name'] }}
+                                <h5 class="card-title">{{ $course['title'] }}
                                     @if($isInactive)
                                         <span class="badge bg-secondary">Inactive</span>
                                     @endif

@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
-use Kreait\Firebase\Database;
+use App\Services\FirebaseService;
 
 class LecturerController extends Controller
 {
@@ -19,9 +19,11 @@ class LecturerController extends Controller
         return view('login.lecturer_dashboard');
     }
 
-    public function __construct()
+    protected $db;
+
+    public function __construct(FirebaseService $firebase)
     {
-        $this->database = app('firebase.database');
+        $this->db = $firebase->db();
     }
 
     public function notificationIndex()

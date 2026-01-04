@@ -178,4 +178,29 @@ public function getDummyCourses()
     return view('courses.materials', compact('course'));
 }
 
+public function seedCoursesToFirebase()
+{
+    $courses = $this->getDummyCourses(); // your hardcoded courses
+
+    foreach ($courses as $id => $course) {
+        // Use the id as the Firebase key (you can use ENG01, MATH01, etc.)
+        $courseKey = "COURSE" . $id;
+
+        $this->db->getReference("courses/{$courseKey}")->set([
+            'name' => $course['title'],
+            'subtitle' => $course['subtitle'],
+            'class' => $course['class'],
+            'lecturer' => $course['lecturer'],
+            'duration' => $course['duration'],
+            'price' => $course['price'],
+            'materials' => $course['materials'],
+            'status' => 'active',
+            'created_at' => now()->toDateTimeString(),
+        ]);
+    }
+
+    return "Courses seeded to Firebase successfully!";
+}
+
+
 }

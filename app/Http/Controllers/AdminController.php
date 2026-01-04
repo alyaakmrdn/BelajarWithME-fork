@@ -12,10 +12,11 @@ class AdminController extends Controller
 {
     protected Database $database;
 
-    public function __construct()
+    public function __construct(FirebaseService $firebase)
     {
-        $this->database = app('firebase.database');
+        $this->database = $firebase->db();
     }
+
 
      public function index()
     {
