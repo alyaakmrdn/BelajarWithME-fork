@@ -10,30 +10,30 @@ RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_mysql zip mbstring exif pcntl gd
 
 # Set working directory
 WORKDIR /var/www
 
-# Copy composer.lock and composer.json
-COPY composer.lock composer.json ./
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- \
+    --install-dir=/usr/local/bin \
+    --filename=composer
 
-# Install composer
-RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
-
-# Install dependencies
-RUN composer install --no-dev --optimize-autoloader
-
-# Copy project
+# Copy entire Laravel project FIRST (important!)
 COPY . .
 
-# Cache config/routes/views
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
+# Install PHP dependencies
+RUN composer install --no-dev --optimize-autoloader
 
-# Expose port
-EXPOSE 8000
+# Cache Laravel config (safe after install)
+RUN php artisan config:clear && \
+    php artisan route:clear && \
+    php artisan view:clear
 
-# Start Laravel server
-CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=8000"]
+# Expose port (Render uses 10000)
+EXPOSE 10000
+
+# Start Laravel
+CMD ["php", "artisan", "serve", "--host=0.0.0.0", "--port=10000"]
