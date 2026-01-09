@@ -64,6 +64,7 @@
 
 <body>
 
+
 <!-- TOP NAVBAR -->
 <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
     <button class="btn btn-outline-secondary me-3" id="toggleSidebar">☰</button>
@@ -115,6 +116,15 @@
 
         <li class="nav-item">
             <a class="nav-link" href="{{ route('admin.manage.reports') }}">Manage Reports</a>
+        </li>
+
+        <!-- User Profile -->
+        <li class="nav-item">
+            <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">User Profile ▾</a>
+            <div class="collapse ps-3" id="profileMenu">
+                <a href="{{ route('admin.profile.view') }}" class="nav-link">Profile</a>
+                <a href="#" class="nav-link">Change Password</a>
+            </div>
         </li>
 
         <li class="nav-item">

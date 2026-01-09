@@ -75,4 +75,66 @@ class LecturerController extends Controller
             'notifications' => $notifications
         ]);
     }
+
+public function profile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'lecturer') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    return view('lecturer.profile_lecturer_view');
+}
+
+public function editProfile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'lecturer') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    return view('lecturer.profile_lecturer_edit');
+}
+
+public function updateProfile(Request $request)
+{
+    if (!Session::has('uid') || Session::get('role') !== 'lecturer') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    $uid = session('uid');
+
+    $request->validate([
+        'name'  => 'required|string|max:255',
+        'email' => 'required|email',
+        'gender' => 'required|string',
+        'department' => 'required|string|max:255',
+        'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    $updateData = [
+        'name'       => $request->name,
+        'email'      => $request->email,
+        'gender'     => $request->gender,
+        'department' => $request->department,
+    ];
+
+    // 📸 Profile picture
+    if ($request->hasFile('profile_picture')) {
+        $file = $request->file('profile_picture');
+        $filename = 'lecturer_' . $uid . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('profile', $filename, 'public');
+
+        $updateData['profile_picture'] = asset('storage/' . $path);
+    }
+
+    $this->db
+        ->getReference("users/{$uid}")
+        ->update($updateData);
+
+    return redirect()
+        ->route('lecturer.profile.view')
+        ->with('success', 'Profile updated successfully.');
+}
+
+
+    
 }

@@ -135,3 +135,59 @@ Route::middleware(['firebase.session', 'role:parent'])->group(function () {
     Route::get('/parent_dashboard', [ParentController::class, 'index'])->name('parent.dashboard');
     Route::get('/parent/manage-reports', [ParentController::class, 'manageReports'])->name('parent.manage.reports');
 });
+
+/* ---------- Admin Profile ---------- */
+
+// Edit profile (view)
+Route::get('/admin/profile_admin_edit', [AdminController::class, 'editProfile'])
+    ->name('admin.profile.edit');
+
+// Update profile (submit)
+Route::post('/admin/profile_admin_update', [AdminController::class, 'updateProfile'])
+    ->name('admin.profile.update');
+
+// View profile (VIEW)
+Route::get('/admin/profile_admin_view', [AdminController::class, 'profile'])
+    ->name('admin.profile.view');
+
+/* ---------- Parent Profile ---------- */
+
+// View profile
+Route::get('/parent/profile_parent_view', [ParentController::class, 'profile'])
+    ->name('parent.profile.view');
+
+// Edit profile
+Route::get('/parent/profile/edit', [ParentController::class, 'editProfile'])
+    ->name('parent.profile.edit');
+
+// Update profile
+Route::post('/parent/profile/update', [ParentController::class, 'updateProfile'])
+    ->name('parent.profile.update');
+
+/* ---------- Student Profile ---------- */
+
+// View profile
+Route::get('/student/profile_student_view', [StudentController::class, 'profile'])
+    ->name('student.profile.view');
+
+// Edit profile
+Route::get('/student/profile_student_edit', [StudentController::class, 'editProfile'])
+    ->name('student.profile.edit');
+
+// Update profile
+Route::post('/student/profile/update', [StudentController::class, 'updateProfile'])
+    ->name('student.profile.update');
+
+/* ---------- Lecturer Profile ---------- */
+
+// View profile
+Route::get('/lecturer/profile_lecturer_view', [LecturerController::class, 'profile'])
+    ->name('lecturer.profile.view');
+
+// Edit profile
+Route::get('/lecturer/profile_lecturer_edit', [LecturerController::class, 'editProfile'])
+    ->name('lecturer.profile.edit');
+
+// Update profile
+Route::post('/lecturer/profile/update', [LecturerController::class, 'updateProfile'])
+    ->name('lecturer.profile.update');

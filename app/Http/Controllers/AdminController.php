@@ -48,18 +48,9 @@ class AdminController extends Controller
             return redirect()->route('login');
         }
 
-        /** 1️⃣ Get courses handled by this admin */
-        $coursesRaw = $this->database
-            ->getReference('courses')
-            ->orderByChild('centre_id')
-            ->equalTo($adminUid)
-            ->getValue() ?? [];
+        $dummyCourses = app(\App\Http\Controllers\CourseController::class)->getDummyCourses();
+$allowedCourseIds = array_keys($dummyCourses);
 
-        if (empty($coursesRaw)) {
-            return view('courses.admin_manageReport', ['reports' => []]);
-        }
-
-        $allowedCourseIds = array_keys($coursesRaw);
 
         /** 2️⃣ Get all users (for lecturer name lookup) */
         $users = $this->database
@@ -103,7 +94,7 @@ class AdminController extends Controller
             ];
         }
 
-        return view('courses.admin_manageReport', compact('reports'));
+        return view('courses.admin_manageReport', compact('reports', 'dummyCourses'));
     }
 
     public function resolveReport(Request $request)
@@ -303,6 +294,75 @@ public function enrollmentPage(Request $request)
 
     return view('admin.enrollment', compact('records', 'studentsDropdown', 'coursesDropdown'));
 }
+
+public function profile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'admin') {
+        return redirect('/login');
+    }
+
+    return view('admin.profile_admin_view');
+}
+
+public function editProfile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'admin') {
+        return redirect('/login');
+    }
+
+    return view('admin.profile_admin_edit');
+}
+
+public function updateProfile(Request $request)
+{
+    if (!Session::has('uid') || Session::get('role') !== 'admin') {
+        return redirect('/login');
+    }
+
+    $uid = session('uid');
+
+    // Validate input
+    $request->validate([
+        'name'   => 'required|string|max:255',
+        'email'  => 'required|email',
+        'phone'  => 'required|string|max:20',
+        'dob'    => 'required|date',
+        'gender' => 'required|in:male,female',
+        'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    $updateData = [
+        'name'   => $request->name,
+        'email'  => $request->email,
+        'phone'  => $request->phone,
+        'dob'    => $request->dob,
+        'gender' => $request->gender,
+    ];
+
+    /** ---------- Profile Picture Upload ---------- */
+    if ($request->hasFile('profile_picture')) {
+        $file = $request->file('profile_picture');
+
+        // Simple filename (Firebase-friendly)
+        $filename = 'admin_' . $uid . '.' . $file->getClientOriginalExtension();
+
+        // Store locally (public/storage/profile)
+        $path = $file->storeAs('profile', $filename, 'public');
+
+        // Save image path / URL
+        $updateData['profile_picture'] = asset('storage/' . $path);
+    }
+
+    /** ---------- Update Firebase ---------- */
+    $this->database
+        ->getReference("users/{$uid}")
+        ->update($updateData);
+
+    return redirect()
+        ->route('admin.profile.view')
+        ->with('success', 'Profile updated successfully.');
+}
+
 
 
 

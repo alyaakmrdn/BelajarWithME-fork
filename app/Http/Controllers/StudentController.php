@@ -108,69 +108,83 @@ public function courses()
     /**
      * Show course overview page (3 dummy subjects).
      */
-    public function courseOverview(Database $db)
-    {
-         if (!Session::has('uid') || Session::get('role') !== 'student') {
-            return redirect('/login')->with('error', 'Access denied.');
-        }
-
-        $courses = $this->db->getReference('courses')->getValue() ?? [];
-        $users   = $this->db->getReference('users')->getValue() ?? [];
-
-        foreach ($courses as $code => &$course) {
-            $lecturerId = $course['lecturer_id'] ?? null;
-            $course['code'] = $code;
-            $course['lecturer_email'] = $users[$lecturerId]['email'] ?? 'N/A';
-        }
-
-        return view('courses.student_courseOverview', compact('courses'));
+    public function courseOverview()
+{
+    $student_uid = session('uid');
+    if (!$student_uid || session('role') !== 'student') {
+        return redirect('/login')->with('error', 'Access denied.');
     }
+
+    // Dummy courses (same as student.courses)
+    $dummyCourses = [
+        1 => ['id'=>1,'title'=>'Mathematics','class'=>'Form 4','price'=>50,'status'=>'active'],
+        2 => ['id'=>2,'title'=>'Science','class'=>'Form 5','price'=>60,'status'=>'active'],
+        3 => ['id'=>3,'title'=>'English','class'=>'Form 3','price'=>40,'status'=>'inactive'],
+    ];
+
+    // Get student enrollments
+    $enrollments = $this->db->getReference('enrollments')->getValue() ?? [];
+    $enrolledCourseIds = [];
+
+    foreach ($enrollments as $enrollment) {
+        if (($enrollment['child_id'] ?? '') === $student_uid && ($enrollment['status'] ?? '') === 'paid') {
+            $enrolledCourseIds[] = $enrollment['course_id'];
+        }
+    }
+
+    // Prepare courses for overview
+    $courses = [];
+    foreach ($dummyCourses as $courseId => $course) {
+        $course['enrolled'] = in_array($courseId, $enrolledCourseIds);
+        $courses[$courseId] = $course;
+    }
+
+    return view('courses.student_courseOverview', compact('courses'));
+}
 
     /**
      * Student submits a report for a malicious subject/course.
      */
-    public function reportCourse(Request $request, Database $db)
-    {
-        // Validate form input
-        $data = $request->validate([
-            'course_id'  => 'required|string',
-            'reason'       => 'required|string|max:50',
-            'description'  => 'required|string|max:500',
-            'target_id'    => 'nullable|string|max:100',
-        ]);
+    public function reportCourse(Request $request)
+{
+    $data = $request->validate([
+        'course_id'   => 'required',
+        'reason'      => 'required|string|max:50',
+        'description' => 'required|string|max:500',
+    ]);
 
-        // verify course_code exists in Firebase
-        $course = $db->getReference('courses/'.$data['course_id'])->getValue();
-        if (!$course) {
-            return back()->with('error', 'Invalid course code.');
-        }
-
-        $firebaseUid = session('uid');
-        $role = session('role');
-
-        // Store report in Firebase: /reports/{pushId}
-        $now = now()->format('Y-m-d H:i:s');
-
-        $report = [
-            'reporter_id'   => $firebaseUid,
-            'reporter_role' => $role,
-            'course_id'   => $data['course_id'],
-            'target_type'   => $data['target_type'] ?? 'course',
-            'target_id'     => $data['target_id'] ?? $data['course_id'],
-            'reason'        => $data['reason'],
-            'description'   => $data['description'],
-            'status'        => 'pending',
-            'created_at'    => $now,
-            'updated_at'    => $now,
-        ];
-
-        $ref = $db->getReference('reports')->push($report);
-
-
-        return redirect()
-            ->route('student.course.overview')
-            ->with('success', 'Report submitted successfully.');
+    // ✅ dummy course validation
+    $dummyCourses = [1, 2, 3];
+    if (!in_array((int)$data['course_id'], $dummyCourses)) {
+        return back()->with('error', 'Invalid course.');
     }
+
+    $firebaseUid = session('uid');
+    $role = session('role');
+
+    $now = now()->format('Y-m-d H:i:s');
+
+    $report = [
+        'reporter_id'   => $firebaseUid,
+        'reporter_role' => $role,
+        'course_id'     => $data['course_id'],
+        'target_type'   => 'course',
+        'target_id'     => $data['course_id'],
+        'reason'        => $data['reason'],
+        'description'   => $data['description'],
+        'status'        => 'pending',
+        'created_at'    => $now,
+        'updated_at'    => $now,
+    ];
+
+    // ✅ uses existing FirebaseService instance
+    $this->db->getReference('reports')->push($report);
+
+    return redirect()
+        ->route('student.course.overview')
+        ->with('success', 'Report submitted successfully.');
+}
+
 
     private function getReportAction(string $reportId): ?array
     {
@@ -204,7 +218,7 @@ public function courses()
             ->getValue();
 
         if (!$reportsRaw) {
-            return view('student.report_status', ['reports' => []]);
+            return view('courses.student_reportStatus', compact('reports'));
         }
 
         // 3. Fetch courses (for course name mapping)
@@ -242,5 +256,74 @@ public function courses()
             'reports' => $reports
         ]);
     }
+
+public function profile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'student') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    return view('student.profile_student_view');
+}
+
+public function editProfile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'student') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    return view('student.profile_student_edit');
+}
+
+public function updateProfile(Request $request)
+{
+    if (!Session::has('uid') || Session::get('role') !== 'student') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    $uid = session('uid');
+
+    $request->validate([
+        'name'          => 'required|string|max:255',
+        'email'         => 'required|email',
+        'age'           => 'required|numeric|min:5|max:25',
+        'dob'           => 'required|date',
+        'school_form'   => 'required|string',
+        'gender'        => 'required|string',
+        'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    $updateData = [
+        'name'        => $request->name,
+        'email'       => $request->email,
+        'age'         => $request->age,
+        'dob'         => $request->dob,
+        'school_form' => $request->school_form,
+        'gender'      => $request->gender,
+    ];
+
+    /* ---------- Profile Picture Upload ---------- */
+    if ($request->hasFile('profile_picture')) {
+        $file = $request->file('profile_picture');
+
+        $filename = 'student_' . $uid . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('profile', $filename, 'public');
+
+        $updateData['profile_picture'] = asset('storage/' . $path);
+    }
+
+    /* ---------- Update Firebase ---------- */
+    $this->db
+        ->getReference("users/{$uid}")
+        ->update($updateData);
+
+    return redirect()
+        ->route('student.profile.view')
+        ->with('success', 'Profile updated successfully.');
+}
+
+
+
+
 
 }

@@ -41,11 +41,10 @@
 
                     {{-- Course --}}
                     <td>
-                      <strong>{{ $report['course_name'] ?? $report['course_id'] }}</strong>
-                      <div class="text-muted small">
-                        {{ $report['course_id'] }}
-                      </div>
-                    </td>
+    <strong>{{ $dummyCourses[$report['course_id']]['title'] ?? $report['course_name'] ?? $report['course_id'] }}</strong>
+    <div class="text-muted small">{{ $report['course_id'] }}</div>
+</td>
+
 
                     {{-- Reason --}}
                     <td>

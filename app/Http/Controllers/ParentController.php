@@ -229,29 +229,24 @@ foreach ($allTransactions as $t) {
     public function manageReports()
     {
         $parentUid = session('uid');
+        $childrenSnapshot = $this->database
+    ->getReference('users')
+    ->orderByChild('parent_uid')
+    ->equalTo($parentUid)
+    ->getValue() ?? [];
 
-        if (!$parentUid || session('role') !== 'parent') {
-            return redirect()->route('login');
-        }
+$childUids = [];
 
-        /** 1️⃣ Get parent user info */
-        $parent = $this->database
-            ->getReference("users/{$parentUid}")
-            ->getValue();
+foreach ($childrenSnapshot as $uid => $child) {
+    if (($child['role'] ?? '') === 'student') {
+        $childUids[] = $uid;
+    }
+}
 
-        if (!$parent || empty($parent['child_id'])) {
-            return view('courses.parent_manageReport', [
-                'reports' => []
-            ]);
-        }
+if (empty($childUids)) {
+    return view('courses.parent_manageReport', ['reports' => []]);
+}
 
-        $childUid = $parent['child_id'];
-
-        $child = $this->database
-            ->getReference("users/{$childUid}")
-            ->getValue();
-
-        $childName = $child['name'] ?? 'Child';
 
         /** 2️⃣ Get all reports */
         $reportsRaw = $this->database
@@ -259,38 +254,36 @@ foreach ($allTransactions as $t) {
             ->getValue() ?? [];
 
         /** 3️⃣ Get courses (for course names) */
-        $courses = $this->database
-            ->getReference('courses')
-            ->getValue() ?? [];
+        $dummyCourses = app(\App\Http\Controllers\CourseController::class)->getDummyCourses();
+
 
         $reports = [];
 
         foreach ($reportsRaw as $reportId => $report) {
-            if (!is_array($report)) continue;
+    if (!is_array($report)) continue;
 
-            // ✅ Only reports submitted by this parent's child
-            if (($report['reporter_id'] ?? null) !== $childUid) {
-                continue;
-            }
+    if (!in_array($report['reporter_id'] ?? null, $childUids)) {
+        continue;
+    }
 
-            $courseId = $report['course_id'] ?? null;
+    $courseId = $report['course_id'] ?? null;
 
-            $reports[] = [
-                'id'           => $reportId,
-                'child_name'   => $childName,
-                'course_name'  => $courses[$courseId]['name'] ?? $courseId,
-                'reason'       => $report['reason'] ?? '-',
-                'description'  => $report['description'] ?? '-',
-                'status'       => $report['status'] ?? 'pending',
-                'created_at'   => $report['created_at'] ?? '-',
-                'updated_at'   => $report['updated_at'] ?? '-',
-                'action'       => $this->getReportAction($reportId),
-            ];
-        }
+    $reports[] = [
+        'id'           => $reportId,
+        'course_id'    => $courseId, // ✅ ADD THIS
+        'child_name'   => $childrenSnapshot[$report['reporter_id']]['name'] ?? 'Child',
+        'course_name'  => $dummyCourses[$courseId]['title'] ?? $courseId,
+        'reason'       => $report['reason'] ?? '-',
+        'description'  => $report['description'] ?? '-',
+        'status'       => $report['status'] ?? 'pending',
+        'created_at'   => $report['created_at'] ?? '-',
+        'updated_at'   => $report['updated_at'] ?? '-',
+        'action'       => $this->getReportAction($reportId),
+    ];
+}
 
-        return view('courses.parent_manageReport', [
-            'reports' => $reports
-        ]);
+        return view('courses.parent_manageReport', compact('reports'));
+
     }
 
     /** 🔹 Fetch admin action (same as student side) */
@@ -306,4 +299,71 @@ foreach ($allTransactions as $t) {
 
         return collect($actions)->first();
     }
+
+public function profile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'parent') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    return view('parent.profile_parent_view');
+}
+
+public function editProfile()
+{
+    if (!Session::has('uid') || Session::get('role') !== 'parent') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    return view('parent.profile_parent_edit');
+}
+
+public function updateProfile(Request $request)
+{
+    if (!Session::has('uid') || Session::get('role') !== 'parent') {
+        return redirect('/login')->with('error', 'Access denied.');
+    }
+
+    $uid = session('uid');
+
+    $request->validate([
+        'name'   => 'required|string|max:255',
+        'email'  => 'required|email',
+        'phone'  => 'required|string|max:20',
+        'dob'    => 'required|date',
+        'gender' => 'required',
+        'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+    ]);
+
+    $updateData = [
+        'name'   => $request->name,
+        'email'  => $request->email,
+        'phone'  => $request->phone,
+        'dob'    => $request->dob,
+        'gender' => $request->gender,
+    ];
+
+    /* ---------- Profile Picture Upload ---------- */
+    if ($request->hasFile('profile_picture')) {
+        $file = $request->file('profile_picture');
+
+        $filename = 'parent_' . $uid . '.' . $file->getClientOriginalExtension();
+        $path = $file->storeAs('profile', $filename, 'public');
+
+        $updateData['profile_picture'] = asset('storage/' . $path);
+    }
+
+    /* ---------- Update Firebase ---------- */
+    $this->database
+        ->getReference("users/{$uid}")
+        ->update($updateData);
+
+    return redirect()
+        ->route('parent.profile.view')
+        ->with('success', 'Profile updated successfully.');
+}
+
+
+
+
 }

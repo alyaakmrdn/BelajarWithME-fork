@@ -66,6 +66,14 @@
 </head>
 
 <body>
+
+@php
+    $db = app('App\Services\FirebaseService')->db();
+    $uid = session('uid');
+    $parent = $db->getReference("users/$uid")->getValue();
+    $profilePic = $parent['profile_picture'] ?? 'https://via.placeholder.com/40';
+@endphp
+
     <!-- TOP NAVBAR -->
     <nav class="navbar navbar-expand-lg bg-white shadow-sm px-4 fixed-top">
         <button class="btn btn-outline-secondary me-3" id="toggleSidebar">☰</button>
@@ -80,7 +88,7 @@
                 <span>Parent</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+                <li><a class="/parent/profile_parent_view" href="#">User Profile</a></li>
                 <li><a class="dropdown-item" href="#">Change Password</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a href="/logout" class="dropdown-item text-danger">Logout</a></li>
@@ -109,7 +117,7 @@
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
                 <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
+                    <a href="{{ route('parent.profile.view') }}"  class="nav-link">My Profile</a>
                     <a href="#" class="nav-link">Change Password</a>
                 </div>
             </li>

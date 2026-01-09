@@ -111,7 +111,7 @@
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+                <li><a class="dropdown-item" href="{{ route('student.profile.view') }}">My Profile</a></li>
                 <li><a class="dropdown-item" href="#">Change Password</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a href="/logout" class="dropdown-item text-danger">Logout</a></li>
@@ -131,9 +131,10 @@
 
             <!-- Courses Menu -->
             <li class="nav-item">
-                <a class="nav-link" href="{{ route('student.courses') }}">My Courses</a>
+                <a class="nav-link" data-bs-toggle="collapse" href="#coursesMenu">My Courses ▾</a>
                 <div class="collapse ps-3" id="coursesMenu">
                     <a href="{{ route('student.course.overview') }}" class="nav-link">Course Overview</a>
+                    <a href="{{ route('student.courses') }}" class="nav-link">Courses Material</a>
                 </div>
             </li>
 
@@ -153,7 +154,7 @@
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
                 <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
+                    <a href="{{ route('student.profile.view') }}" class="nav-link">My Profile</a>
                     <a href="#" class="nav-link">Change Password</a>
                 </div>
             </li>

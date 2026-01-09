@@ -90,7 +90,7 @@
             </a>
 
             <ul class="dropdown-menu dropdown-menu-end">
-                <li><a class="dropdown-item" href="#">Edit Profile</a></li>
+                <li><a class="dropdown-item" href="{{ route('lecturer.profile.view') }}">My Profile</a></li>
                 <li><a class="dropdown-item" href="#">Change Password</a></li>
                 <li><hr class="dropdown-divider"></li>
                 <li><a class="dropdown-item text-danger" href="/logout">Logout</a></li>
@@ -134,7 +134,7 @@
             <li class="nav-item">
                 <a class="nav-link" data-bs-toggle="collapse" href="#profileMenu">Profile Settings ▾</a>
                 <div class="collapse ps-3" id="profileMenu">
-                    <a href="#" class="nav-link">Edit Profile</a>
+                    <a href="{{ route('lecturer.profile.view') }}" class="nav-link">My Profile</a>
                     <a href="#" class="nav-link">Change Password</a>
                 </div>
             </li>
