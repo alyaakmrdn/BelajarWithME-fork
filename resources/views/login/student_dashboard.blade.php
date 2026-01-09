@@ -18,7 +18,7 @@
             <div class="card border-0 shadow-sm hover-shadow transition">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Enrolled Courses</h6>
-                    <h2 class="fw-bold text-primary">4</h2>
+                    <h2 class="fw-bold text-primary">2</h2>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
             <div class="card border-0 shadow-sm hover-shadow transition">
                 <div class="card-body text-center">
                     <h6 class="text-muted">Pending Assignments</h6>
-                    <h2 class="fw-bold text-danger">2</h2>
+                    <h2 class="fw-bold text-danger">4</h2>
                 </div>
             </div>
         </div>
@@ -62,41 +62,6 @@
                     <h5 class="mb-0">My Courses</h5>
                 </div>
 
-                @foreach($courses as $course)
-                    @php
-                        $isInactive = ($course['status'] ?? 'active') === 'inactive';
-                    @endphp
-                    <div class="col-md-4">
-                        <div class="card shadow-sm {{ $isInactive ? 'course-inactive' : '' }}">
-                            <div class="card-body">
-                                <h5 class="card-title">{{ $course['title'] }}
-                                    @if($isInactive)
-                                        <span class="badge bg-secondary">Inactive</span>
-                                    @endif
-                                </h5>
-                                
-
-                                <p class="card-text">
-                                    Lecturer: {{ $course['lecturer_email'] }} <br>
-                                    Status: {{ ucfirst($course['status']) }}
-                                </p>
-
-                                @if($isInactive)
-                                    <div class="alert alert-warning small mt-2">
-                                        This course has been deactivated by admin.
-                                    </div>
-                                @endif
-
-                                <a
-                                    href="#"
-                                    class="btn btn-primary btn-sm {{ $isInactive ? 'disabled' : '' }}">
-                                    View
-                                </a>
-                            </div>
-                        </div>
-                    </div>
-                @endforeach
-
                 <div class="card-body">
                     <table class="table table-hover align-middle">
                         <thead class="table-light">
@@ -110,7 +75,7 @@
                         <tbody>
                             <tr>
                                 <td>Mathematics</td>
-                                <td>Mr. Ali</td>
+                                <td>Mark Lee</td>
                                 <td>
                                     <div class="progress">
                                         <div class="progress-bar bg-success" style="width: 80%"></div>
@@ -120,7 +85,7 @@
                             </tr>
                             <tr>
                                 <td>Science</td>
-                                <td>Ms. Aina</td>
+                                <td>Jane Smith</td>
                                 <td>
                                     <div class="progress">
                                         <div class="progress-bar bg-warning" style="width: 60%"></div>

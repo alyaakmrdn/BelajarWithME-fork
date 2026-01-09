@@ -161,7 +161,7 @@
 
     <!-- Pagination -->
     <div class="d-flex justify-content-center mt-4">
-        {{ $transactions->links() }}
+        {{ $transactions->links('pagination::bootstrap-5') }}
     </div>
 
 @endsection
