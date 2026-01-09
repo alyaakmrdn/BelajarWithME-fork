@@ -127,7 +127,7 @@
             </li>
 
             <li class="nav-item">
-                <a class="nav-link" href="{{route('lecturer.notifications')}}">Notification</a>
+                <a class="nav-link" href="#">Notification</a>
             </li>
 
             <!-- Profile -->
